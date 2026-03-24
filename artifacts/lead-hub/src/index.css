@@ -368,3 +368,23 @@
   .overflow-auto, .overflow-y-auto, .overflow-scroll, .overflow-y-scroll { overflow: visible !important; max-height: none !important; }
   [style*="max-height"] { max-height: none !important; }
 }
+/* Range input slider styles */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0079F2;
+  border: 2px solid rgba(255,255,255,0.9);
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0079F2;
+  border: 2px solid rgba(255,255,255,0.9);
+  cursor: pointer;
+}
+input[type="range"] { cursor: pointer; }
