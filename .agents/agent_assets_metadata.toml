@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "rtkab26iRgjO96Nt3K7Ms"
+uri = "file://.agents/outputs/lead-generation-analysis.md"
+type = "text"
+title = "Lead Generation Intelligence Analysis Report — March 2026"

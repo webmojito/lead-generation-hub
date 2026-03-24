@@ -1,3 +1,33 @@
+# Lead Generation Intelligence Hub
+
+## Overview
+
+A full-stack B2B marketing intelligence dashboard (Lead Intelligence Hub) built with React + Vite (frontend) and Express (backend). Features a dark-themed dashboard with real-time KPI tracking, funnel velocity charts, channel performance analysis, and top/underperforming channel panels.
+
+## Artifacts
+
+- `artifacts/lead-hub` — Main React + Vite dashboard (previewPath: "/")
+- `artifacts/api-server` — Express API server (previewPath: "/api")
+
+## Dashboard Features
+
+- 4 KPI cards: Avg CPL, MQL→SQL rate, SQL→Won rate, Current ROI
+- Stats row: Total MQLs, SQLs, Pipeline, Closed Won
+- Lead Funnel Velocity bar chart (MQL vs SQL monthly, recharts)
+- Performance vs Objectives donut chart (recharts PieChart)
+- Channel Performance Breakdown table (@tanstack/react-table, sortable)
+- Top & Underperforming Channels panels
+- Split refresh with auto-refresh, PDF export, dark/light toggle, CSV export per chart
+
+## API Routes
+
+- GET /api/dashboard/kpis → DashboardKpis object
+- GET /api/dashboard/funnel-velocity → FunnelVelocityPoint[]
+- GET /api/dashboard/channel-performance → ChannelPerformance[]
+- GET /api/dashboard/top-channels → TopChannelsResponse
+
+---
+
 # Workspace
 
 ## Overview
