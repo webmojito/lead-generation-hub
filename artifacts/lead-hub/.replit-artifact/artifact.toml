@@ -1,0 +1,31 @@
+kind = "data-app"
+previewPath = "/"
+title = "Lead Generation Intelligence Hub"
+version = "1.0.0"
+id = "artifacts/lead-hub"
+router = "path"
+
+[[integratedSkills]]
+name = "data-visualization"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26207
+
+[services.development]
+run = "pnpm --filter @workspace/lead-hub run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/lead-hub", "run", "build" ]
+publicDir = "artifacts/lead-hub/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26207"
+BASE_PATH = "/"

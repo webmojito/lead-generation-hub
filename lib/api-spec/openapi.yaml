@@ -1,15 +1,16 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Lead Generation Intelligence Hub API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard data
 paths:
   /healthz:
     get:
@@ -24,6 +25,63 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/kpis:
+    get:
+      operationId: getDashboardKpis
+      tags: [dashboard]
+      summary: Get dashboard KPI metrics
+      responses:
+        "200":
+          description: KPI data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardKpis"
+
+  /dashboard/funnel-velocity:
+    get:
+      operationId: getFunnelVelocity
+      tags: [dashboard]
+      summary: Monthly MQL vs SQL funnel velocity
+      responses:
+        "200":
+          description: Funnel velocity data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FunnelVelocityPoint"
+
+  /dashboard/channel-performance:
+    get:
+      operationId: getChannelPerformance
+      tags: [dashboard]
+      summary: Channel performance breakdown
+      responses:
+        "200":
+          description: Channel performance data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChannelPerformance"
+
+  /dashboard/top-channels:
+    get:
+      operationId: getTopChannels
+      tags: [dashboard]
+      summary: Top and underperforming channels
+      responses:
+        "200":
+          description: Top/underperforming channels
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopChannelsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +92,166 @@ components:
       required:
         - status
 
+    DashboardKpis:
+      type: object
+      properties:
+        avgCpl:
+          type: number
+          description: Average Cost Per Lead in USD
+        avgCplChange:
+          type: number
+          description: Percentage change vs last year
+        mqlToSqlRate:
+          type: number
+          description: MQL to SQL conversion rate (percentage)
+        mqlToSqlChange:
+          type: number
+        sqlToWonRate:
+          type: number
+          description: SQL to Won conversion rate (percentage)
+        sqlToWonChange:
+          type: number
+        currentRoi:
+          type: number
+          description: Current ROI as a multiplier (e.g. 4.8 means 4.8x)
+        currentRoiChange:
+          type: number
+        totalMqls:
+          type: integer
+        totalSqls:
+          type: integer
+        totalPipeline:
+          type: number
+          description: Total pipeline value in USD
+        totalClosedWon:
+          type: number
+          description: Total closed won value in USD
+        performanceVsGoal:
+          type: number
+          description: Overall performance vs goal (percentage, e.g. 75)
+        pipelineGoal:
+          type: number
+        closedWonGoal:
+          type: number
+        totalContacts:
+          type: integer
+          description: Total contacts in DB
+        avgConversionTimeDays:
+          type: number
+          description: Average conversion time in days
+      required:
+        - avgCpl
+        - avgCplChange
+        - mqlToSqlRate
+        - mqlToSqlChange
+        - sqlToWonRate
+        - sqlToWonChange
+        - currentRoi
+        - currentRoiChange
+        - totalMqls
+        - totalSqls
+        - totalPipeline
+        - totalClosedWon
+        - performanceVsGoal
+        - pipelineGoal
+        - closedWonGoal
+        - totalContacts
+        - avgConversionTimeDays
+
+    FunnelVelocityPoint:
+      type: object
+      properties:
+        month:
+          type: string
+          description: Month name (e.g. "JANUARY")
+        mql:
+          type: integer
+        sql:
+          type: integer
+        mqlGoal:
+          type: integer
+        sqlGoal:
+          type: integer
+      required:
+        - month
+        - mql
+        - sql
+        - mqlGoal
+        - sqlGoal
+
+    ChannelPerformance:
+      type: object
+      properties:
+        name:
+          type: string
+        icon:
+          type: string
+        mqls:
+          type: integer
+        sqls:
+          type: integer
+        conversionRate:
+          type: number
+          description: Conversion rate percentage
+        pipelineContribution:
+          type: number
+          description: Percentage contribution to total pipeline
+        wonContribution:
+          type: number
+          description: Percentage contribution to closed won
+        roi:
+          type: number
+          description: ROI multiplier
+        trend:
+          type: string
+          enum: [up, down, flat]
+        avgConversionDays:
+          type: number
+          description: Average days to convert
+      required:
+        - name
+        - icon
+        - mqls
+        - sqls
+        - conversionRate
+        - pipelineContribution
+        - wonContribution
+        - roi
+        - trend
+        - avgConversionDays
+
+    TopChannelsResponse:
+      type: object
+      properties:
+        topChannels:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelSummary"
+        underperformingChannels:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelSummary"
+      required:
+        - topChannels
+        - underperformingChannels
+
+    ChannelSummary:
+      type: object
+      properties:
+        name:
+          type: string
+        subtitle:
+          type: string
+        leads:
+          type: integer
+        cpl:
+          type: number
+        trend:
+          type: string
+          enum: [up, down, flat]
+      required:
+        - name
+        - subtitle
+        - leads
+        - cpl
+        - trend
