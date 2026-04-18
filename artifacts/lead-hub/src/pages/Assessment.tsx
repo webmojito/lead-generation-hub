@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
   Building2, Target, DollarSign, TrendingUp, BarChart2,
   CheckCircle2, ChevronRight, ChevronLeft, ArrowRight,
-  Sparkles, Info,
+  Sparkles, Info, ChevronDown, BookOpen, Calculator,
 } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
@@ -14,71 +13,84 @@ export const ASSESSMENT_KEY = "leadhub_assessment_v1";
 
 /* ── Types ── */
 export interface AssessmentData {
-  /* Step 1 */
-  nomeAzienda:      string;
-  settore:          string;
-  dimensione:       string;
-  mercatoTarget:    string[];
-  modelloBusinesss: string;
-  /* Step 2 */
-  arrAttuale:       string;
-  arrTarget:        string;
-  acvMedio:         string;
-  churnRate:        string;
-  crescitaMom:      number;
-  /* Step 3 */
-  budgetAnnuale:    string;
-  budgetPaid:       number;
-  budgetContent:    number;
-  budgetEvents:     number;
-  budgetAbm:        number;
-  canaliAttivi:     string[];
-  teamSize:         string;
-  crmStack:         string[];
-  /* Step 4 */
-  leadMensili:      string;
-  tassoMqlSql:      number;
-  tassoSqlClose:    number;
-  cicloVendita:     number;
-  cacAttuale:       string;
-  /* Step 5 */
-  competitor1:      string;
-  competitor2:      string;
-  competitor3:      string;
-  differenziatore:  string;
-  nps:              number;
-  maturitaMktg:     string;
+  mode: "enterprise" | "pmi";
+  /* Step 1 — shared */
+  nomeAzienda: string; settore: string; dimensione: string;
+  mercatoTarget: string[]; modelloBusinesss: string;
+  /* Step 2 — enterprise */
+  arrAttuale: string; arrTarget: string; acvMedio: string;
+  churnRate: string; crescitaMom: number;
+  /* Step 2 — pmi */
+  faseBusiness: string; obiettivoPrincipale: string; sfidaPrincipale: string;
+  clientiAttuali: string; fatturatoPMI: string; acvStimato: string;
+  /* Step 3 — enterprise */
+  budgetAnnuale: string; budgetPaid: number; budgetContent: number;
+  budgetEvents: number; budgetAbm: number; canaliAttivi: string[]; teamSize: string; crmStack: string[];
+  /* Step 3 — pmi */
+  budgetFascia: string; canaliPMI: string[]; frequenzaContenuti: string;
+  /* Step 4 — enterprise */
+  leadMensili: string; tassoMqlSql: number; tassoSqlClose: number;
+  cicloVendita: number; cacAttuale: string;
+  /* Step 4 — pmi */
+  comeTrovaClienti: string[]; opportunitaMensili: string; tassoSuccessoPMI: string;
+  tempoChiusuraPMI: string;
+  /* Step 5 — shared */
+  competitor1: string; competitor2: string; competitor3: string;
+  differenziatore: string; nps: number; maturitaMktg: string;
+  /* Step 5 — pmi extra */
+  prossimaPriorita: string[]; chiSiOccupa: string;
 }
 
 const DEFAULT: AssessmentData = {
+  mode: "enterprise",
   nomeAzienda: "", settore: "", dimensione: "", mercatoTarget: [], modelloBusinesss: "",
   arrAttuale: "", arrTarget: "", acvMedio: "", churnRate: "", crescitaMom: 15,
+  faseBusiness: "", obiettivoPrincipale: "", sfidaPrincipale: "", clientiAttuali: "", fatturatoPMI: "", acvStimato: "",
   budgetAnnuale: "", budgetPaid: 40, budgetContent: 30, budgetEvents: 20, budgetAbm: 10,
   canaliAttivi: [], teamSize: "", crmStack: [],
+  budgetFascia: "", canaliPMI: [], frequenzaContenuti: "",
   leadMensili: "", tassoMqlSql: 25, tassoSqlClose: 20, cicloVendita: 45, cacAttuale: "",
+  comeTrovaClienti: [], opportunitaMensili: "", tassoSuccessoPMI: "", tempoChiusuraPMI: "",
   competitor1: "", competitor2: "", competitor3: "", differenziatore: "", nps: 40, maturitaMktg: "",
+  prossimaPriorita: [], chiSiOccupa: "",
 };
 
 const STEPS = [
-  { id: 1, label: "Profilo",    icon: <Building2 className="w-4 h-4" />,  color: C.blue   },
-  { id: 2, label: "Obiettivi",  icon: <Target className="w-4 h-4" />,     color: C.purple },
-  { id: 3, label: "Budget",     icon: <DollarSign className="w-4 h-4" />, color: C.amber  },
-  { id: 4, label: "Funnel",     icon: <TrendingUp className="w-4 h-4" />, color: C.green  },
-  { id: 5, label: "Mercato",    icon: <BarChart2 className="w-4 h-4" />,  color: C.red    },
+  { id: 1, label: "Profilo",  icon: <Building2 className="w-4 h-4" />,  color: C.blue   },
+  { id: 2, label: "Obiettivi",icon: <Target className="w-4 h-4" />,     color: C.purple },
+  { id: 3, label: "Budget",   icon: <DollarSign className="w-4 h-4" />, color: C.amber  },
+  { id: 4, label: "Funnel",   icon: <TrendingUp className="w-4 h-4" />, color: C.green  },
+  { id: 5, label: "Mercato",  icon: <BarChart2 className="w-4 h-4" />,  color: C.red    },
 ];
 
-/* ── Small helpers ── */
-function Label({ text, hint }: { text: string; hint?: string }) {
+/* ── Helpers UI ── */
+function Label({ text, hint, formula }: { text: string; hint?: string; formula?: string }) {
+  const [showFormula, setShowFormula] = useState(false);
   return (
-    <div className="flex items-center gap-1.5 mb-1.5">
-      <label className="text-sm font-semibold">{text}</label>
-      {hint && (
-        <span className="group relative cursor-help">
-          <Info className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="absolute left-5 -top-1 z-10 hidden group-hover:block bg-foreground text-background text-[11px] rounded-lg px-2.5 py-1.5 w-48 leading-tight shadow">
-            {hint}
+    <div className="mb-1.5">
+      <div className="flex items-center gap-1.5">
+        <label className="text-sm font-semibold">{text}</label>
+        {hint && (
+          <span className="group relative cursor-help">
+            <Info className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="absolute left-5 -top-1 z-20 hidden group-hover:block bg-foreground text-background text-[11px] rounded-lg px-2.5 py-1.5 w-56 leading-tight shadow-xl">
+              {hint}
+            </span>
           </span>
-        </span>
+        )}
+        {formula && (
+          <button onClick={() => setShowFormula(v => !v)}
+            className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full transition-colors"
+            style={{ backgroundColor: `${C.blue}15`, color: C.blue }}>
+            <Calculator className="w-2.5 h-2.5" /> Come si calcola
+          </button>
+        )}
+      </div>
+      {formula && showFormula && (
+        <div className="mt-1.5 px-3 py-2 rounded-xl text-[11px] leading-relaxed font-mono"
+          style={{ backgroundColor: `${C.blue}08`, borderLeft: `3px solid ${C.blue}40`, color: "var(--muted-foreground)" }}>
+          {formula}
+        </div>
       )}
     </div>
   );
@@ -86,7 +98,8 @@ function Label({ text, hint }: { text: string; hint?: string }) {
 
 function TextInput({ val, set, placeholder, prefix }: { val: string; set: (v: string) => void; placeholder?: string; prefix?: string }) {
   return (
-    <div className="flex items-center border border-border rounded-xl bg-background overflow-hidden focus-within:ring-2" style={{ "--tw-ring-color": `${C.blue}55` } as any}>
+    <div className="flex items-center border border-border rounded-xl bg-background overflow-hidden focus-within:ring-2"
+      style={{ "--tw-ring-color": `${C.blue}55` } as any}>
       {prefix && <span className="px-3 text-sm text-muted-foreground border-r border-border bg-muted/40 self-stretch flex items-center">{prefix}</span>}
       <input value={val} onChange={e => set(e.target.value)} placeholder={placeholder}
         className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none" />
@@ -139,14 +152,14 @@ function MultiCheck({ val, set, options }: { val: string[]; set: (v: string[]) =
   );
 }
 
-function SliderField({ label, val, set, min, max, step, suffix, hint }: {
+function SliderField({ label, val, set, min, max, step, suffix, hint, formula }: {
   label: string; val: number; set: (v: number) => void;
-  min: number; max: number; step?: number; suffix?: string; hint?: string;
+  min: number; max: number; step?: number; suffix?: string; hint?: string; formula?: string;
 }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-1.5">
-        <Label text={label} hint={hint} />
+        <Label text={label} hint={hint} formula={formula} />
         <span className="text-sm font-extrabold" style={{ color: C.blue }}>{val}{suffix}</span>
       </div>
       <input type="range" min={min} max={max} step={step ?? 1} value={val}
@@ -155,6 +168,31 @@ function SliderField({ label, val, set, min, max, step, suffix, hint }: {
       <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
         <span>{min}{suffix}</span><span>{max}{suffix}</span>
       </div>
+    </div>
+  );
+}
+
+function FormulaBox({ title, rows }: { title: string; rows: { label: string; formula: string }[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-xl border transition-all" style={{ borderColor: `${C.purple}30`, backgroundColor: `${C.purple}06` }}>
+      <button onClick={() => setOpen(v => !v)} className="w-full flex items-center gap-2 px-4 py-3 text-left">
+        <BookOpen className="w-3.5 h-3.5 shrink-0" style={{ color: C.purple }} />
+        <span className="text-[12px] font-semibold flex-1" style={{ color: C.purple }}>{title}</span>
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform shrink-0 ${open ? "rotate-180" : ""}`} style={{ color: C.purple }} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-2">
+          {rows.map((r, i) => (
+            <div key={i}>
+              <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">{r.label}</p>
+              <p className="text-[11px] font-mono px-3 py-1.5 rounded-lg" style={{ backgroundColor: `${C.purple}10`, color: C.purple }}>
+                {r.formula}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -179,13 +217,13 @@ function BudgetSliders({ data, set }: { data: AssessmentData; set: (k: keyof Ass
         </div>
       ))}
       <div className={`text-xs mt-2 font-semibold ${total === 100 ? "text-green-600" : "text-amber-600"}`}>
-        Totale: {total}% {total === 100 ? "✓ Perfetto" : `— aggiusta di ${100 - total > 0 ? "+" : ""}${100 - total}%`}
+        Totale: {total}% {total === 100 ? "— Perfetto" : `— aggiusta di ${100 - total > 0 ? "+" : ""}${100 - total}%`}
       </div>
     </div>
   );
 }
 
-/* ── Steps ── */
+/* ── Step 1 — shared ── */
 function Step1({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
   return (
     <div className="space-y-5">
@@ -196,17 +234,18 @@ function Step1({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
         </div>
         <div>
           <Label text="Settore / Industria" hint="Il settore principale in cui opera la tua azienda." />
-          <SelectInput val={data.settore} set={v => set("settore", v)} placeholder="Seleziona settore…" options={[
-            "SaaS / Software", "Finance & FinTech", "Healthcare / MedTech", "Manufacturing",
-            "Retail & eCommerce", "Professional Services", "Education / EdTech", "Altro",
+          <SelectInput val={data.settore} set={v => set("settore", v)} options={[
+            "SaaS / Software","Finance & FinTech","Healthcare / MedTech","Manufacturing",
+            "Retail & eCommerce","Professional Services","Education / EdTech","Artigianato / Commercio locale","Altro",
           ]} />
         </div>
       </div>
       <div>
         <Label text="Dimensione Azienda (dipendenti)" />
         <RadioGroup val={data.dimensione} set={v => set("dimensione", v)} options={[
-          { value: "1-10",    label: "1–10" },
-          { value: "11-50",   label: "11–50" },
+          { value: "1-5",     label: "1–5" },
+          { value: "6-15",    label: "6–15" },
+          { value: "16-50",   label: "16–50" },
           { value: "51-200",  label: "51–200" },
           { value: "201-500", label: "201–500" },
           { value: "500+",    label: "500+" },
@@ -215,55 +254,119 @@ function Step1({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
       <div>
         <Label text="Mercato Target" hint="Seleziona tutti i mercati geografici in cui operi o vuoi espanderti." />
         <MultiCheck val={data.mercatoTarget} set={v => set("mercatoTarget", v)}
-          options={["Italia", "Europa (DACH)", "Europa (EMEA)", "UK", "Nord America", "APAC", "Global"]} />
+          options={["Italia","Europa (DACH)","Europa (EMEA)","UK","Nord America","APAC","Global"]} />
       </div>
       <div>
         <Label text="Modello di Business" />
         <RadioGroup val={data.modelloBusinesss} set={v => set("modelloBusinesss", v)} options={[
-          { value: "B2B",    label: "B2B" },
-          { value: "B2C",    label: "B2C" },
-          { value: "B2B2C",  label: "B2B2C" },
-          { value: "PLG",    label: "Product-Led (PLG)" },
-          { value: "Misto",  label: "Misto" },
+          { value: "B2B", label: "B2B" },
+          { value: "B2C", label: "B2C" },
+          { value: "B2B2C", label: "B2B2C" },
+          { value: "PLG", label: "Product-Led (PLG)" },
+          { value: "Misto", label: "Misto" },
         ]} />
       </div>
     </div>
   );
 }
 
-function Step2({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+/* ── Step 2 Enterprise ── */
+function Step2Enterprise({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <Label text="ARR Attuale" hint="Annual Recurring Revenue attuale in Euro." />
+          <Label text="ARR Attuale" hint="Annual Recurring Revenue: somma di tutti i contratti ricorrenti annualizzati."
+            formula={"ARR = MRR × 12\n\ndove MRR = somma di tutti i canoni mensili ricorrenti attivi"} />
           <TextInput val={data.arrAttuale} set={v => set("arrAttuale", v)} placeholder="Es. 500000" prefix="€" />
         </div>
         <div>
-          <Label text="ARR Target (12 mesi)" hint="Obiettivo di ARR che vuoi raggiungere nei prossimi 12 mesi." />
+          <Label text="ARR Target (12 mesi)" hint="Obiettivo di ARR che vuoi raggiungere nei prossimi 12 mesi."
+            formula={"ARR Target = ARR attuale × (1 + crescita annua desiderata)\n\nEs. 500K × 1.4 = 700K con crescita 40%"} />
           <TextInput val={data.arrTarget} set={v => set("arrTarget", v)} placeholder="Es. 1200000" prefix="€" />
         </div>
         <div>
-          <Label text="ACV Medio per Cliente" hint="Average Contract Value — valore medio annuo per cliente." />
+          <Label text="ACV Medio per Cliente" hint="Average Contract Value: valore medio annuale di un contratto cliente."
+            formula={"ACV = Valore totale contratto ÷ Durata anni\n\nOppure: ARR ÷ numero clienti attivi"} />
           <TextInput val={data.acvMedio} set={v => set("acvMedio", v)} placeholder="Es. 12000" prefix="€" />
         </div>
         <div>
-          <Label text="Churn Rate Attuale" hint="Percentuale di clienti persi ogni anno." />
+          <Label text="Churn Rate Attuale" hint="Percentuale di clienti o ricavi persi ogni anno."
+            formula={"Churn = Clienti persi nel periodo ÷ Clienti a inizio periodo × 100\n\nEs. 10 persi / 200 iniziali = 5%"} />
           <TextInput val={data.churnRate} set={v => set("churnRate", v)} placeholder="Es. 5" prefix="%" />
         </div>
       </div>
       <SliderField label="Crescita MoM Desiderata" val={data.crescitaMom} set={v => set("crescitaMom", v)}
-        min={1} max={50} suffix="%" hint="Month-over-Month growth rate che vuoi raggiungere." />
+        min={1} max={50} suffix="%"
+        hint="Month-over-Month growth rate che vuoi raggiungere."
+        formula={"MoM Growth = (MRR mese corrente - MRR mese precedente) ÷ MRR mese precedente × 100"} />
     </div>
   );
 }
 
-function Step3({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+/* ── Step 2 PMI ── */
+function Step2PMI({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <Label text="In che fase si trova la tua azienda?" hint="Scegli la fase che meglio descrive il momento attuale." />
+        <RadioGroup val={data.faseBusiness} set={v => set("faseBusiness", v)} options={[
+          { value: "idea",        label: "Idea / Pre-lancio" },
+          { value: "early",       label: "Appena lanciati (0–2 anni)" },
+          { value: "crescita",    label: "Crescita (2–5 anni)" },
+          { value: "consolidamento", label: "Consolidamento (5+ anni)" },
+        ]} />
+      </div>
+      <div>
+        <Label text="Qual è il tuo obiettivo principale nei prossimi 12 mesi?" />
+        <RadioGroup val={data.obiettivoPrincipale} set={v => set("obiettivoPrincipale", v)} options={[
+          { value: "nuovi_clienti",  label: "Trovare nuovi clienti" },
+          { value: "upsell",         label: "Aumentare il valore dei clienti esistenti" },
+          { value: "espansione",     label: "Espandersi in nuovi mercati" },
+          { value: "fidelizzazione", label: "Ridurre il churn / fidelizzare" },
+          { value: "brand",          label: "Aumentare la notorietà del brand" },
+        ]} />
+      </div>
+      <div>
+        <Label text="Qual è la tua principale sfida di marketing?" />
+        <RadioGroup val={data.sfidaPrincipale} set={v => set("sfidaPrincipale", v)} options={[
+          { value: "budget",    label: "Budget limitato" },
+          { value: "risorse",   label: "Mancanza di risorse / team" },
+          { value: "dove",      label: "Non so da dove iniziare" },
+          { value: "competition", label: "Concorrenza molto forte" },
+          { value: "misurare",  label: "Non so come misurare i risultati" },
+        ]} />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <Label text="Quanti clienti attivi hai oggi (circa)?" />
+          <TextInput val={data.clientiAttuali} set={v => set("clientiAttuali", v)} placeholder="Es. 50" />
+        </div>
+        <div>
+          <Label text="Fatturato annuale approssimativo" hint="Non preoccuparti della precisione — serve per calibrare le raccomandazioni." />
+          <SelectInput val={data.fatturatoPMI} set={v => set("fatturatoPMI", v)} options={[
+            "< 100K €", "100K – 300K €", "300K – 500K €", "500K – 1M €", "1M – 3M €", "> 3M €",
+          ]} placeholder="Seleziona fascia…" />
+        </div>
+      </div>
+      <FormulaBox title="Come stimare il tuo ARR (Annual Recurring Revenue)" rows={[
+        { label: "Se hai contratti/abbonamenti ricorrenti:", formula: "ARR = Numero clienti × Canone annuale medio" },
+        { label: "Se hai vendite una-tantum:", formula: "ARR stimato = Fatturato annuo × % clienti ricorrenti" },
+        { label: "Esempio pratico:", formula: "50 clienti × 2.400€/anno = 120.000€ ARR" },
+      ]} />
+    </div>
+  );
+}
+
+/* ── Step 3 Enterprise ── */
+function Step3Enterprise({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <Label text="Budget Marketing Annuale" hint="Budget totale disponibile per il marketing (incluso team)." />
+          <Label text="Budget Marketing Annuale"
+            hint="Budget totale disponibile per il marketing (incluso team)."
+            formula={"Regola pratica:\n- Startup crescita: 20–30% del fatturato\n- Scale-up: 15–20%\n- Consolidato: 10–15%"} />
           <TextInput val={data.budgetAnnuale} set={v => set("budgetAnnuale", v)} placeholder="Es. 200000" prefix="€" />
         </div>
         <div>
@@ -272,7 +375,7 @@ function Step3({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
         </div>
       </div>
       <div>
-        <Label text="Allocazione Budget per Canale" hint="La somma deve essere 100%. Trascina per modificare." />
+        <Label text="Allocazione Budget per Canale" hint="La somma deve essere 100%." />
         <BudgetSliders data={data} set={set} />
       </div>
       <div>
@@ -289,30 +392,128 @@ function Step3({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
   );
 }
 
-function Step4({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+/* ── Step 3 PMI ── */
+function Step3PMI({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <Label text="Lead Totali al Mese (attuali)" hint="Numero di nuovi lead generati ogni mese in media." />
-          <TextInput val={data.leadMensili} set={v => set("leadMensili", v)} placeholder="Es. 500" />
-        </div>
-        <div>
-          <Label text="CAC Attuale (Costo per Acquisire un Cliente)" hint="Quanto spendi in media per acquisire un nuovo cliente." />
-          <TextInput val={data.cacAttuale} set={v => set("cacAttuale", v)} placeholder="Es. 1500" prefix="€" />
-        </div>
+      <div>
+        <Label text="Quanto spendi in marketing all'anno (circa)?" hint="Include qualsiasi spesa per pubblicità, strumenti, consulenti e contenuti." />
+        <RadioGroup val={data.budgetFascia} set={v => set("budgetFascia", v)} options={[
+          { value: "< 5K",     label: "Meno di 5.000€" },
+          { value: "5-20K",    label: "5.000 – 20.000€" },
+          { value: "20-50K",   label: "20.000 – 50.000€" },
+          { value: "50-100K",  label: "50.000 – 100.000€" },
+          { value: "> 100K",   label: "Oltre 100.000€" },
+        ]} />
       </div>
-      <SliderField label="Tasso di Conversione MQL → SQL" val={data.tassoMqlSql} set={v => set("tassoMqlSql", v)}
-        min={1} max={80} suffix="%" hint="Quanti MQL (Marketing Qualified Lead) diventano SQL (Sales Qualified Lead)." />
-      <SliderField label="Tasso di Chiusura SQL → Cliente" val={data.tassoSqlClose} set={v => set("tassoSqlClose", v)}
-        min={1} max={80} suffix="%" hint="Quanti SQL diventano effettivamente clienti paganti." />
-      <SliderField label="Ciclo di Vendita Medio" val={data.cicloVendita} set={v => set("cicloVendita", v)}
-        min={1} max={365} step={5} suffix=" gg" hint="Numero di giorni dal primo contatto alla firma del contratto." />
+      <div>
+        <Label text="Canali che usi (o vuoi usare)" />
+        <MultiCheck val={data.canaliPMI} set={v => set("canaliPMI", v)}
+          options={["Instagram / Facebook","LinkedIn","Google Ads","SEO / Blog","Email Newsletter","WhatsApp Business","Fiere / Eventi","Passaparola","Altro"]} />
+      </div>
+      <div>
+        <Label text="Con quale frequenza pubblichi contenuti?" />
+        <RadioGroup val={data.frequenzaContenuti} set={v => set("frequenzaContenuti", v)} options={[
+          { value: "mai",          label: "Mai / Raramente" },
+          { value: "mensile",      label: "Qualche volta al mese" },
+          { value: "settimanale",  label: "1–2 volte a settimana" },
+          { value: "quotidiano",   label: "Ogni giorno" },
+        ]} />
+      </div>
+      <FormulaBox title="Come stimare il budget marketing ottimale per la tua fase" rows={[
+        { label: "Startup (fase di crescita aggressiva):", formula: "Budget = Fatturato × 20–30%" },
+        { label: "PMI in espansione:", formula: "Budget = Fatturato × 12–18%" },
+        { label: "Azienda consolidata:", formula: "Budget = Fatturato × 8–12%" },
+        { label: "Esempio PMI con 500K fatturato:", formula: "500.000€ × 15% = 75.000€/anno → 6.250€/mese" },
+      ]} />
     </div>
   );
 }
 
-function Step5({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+/* ── Step 4 Enterprise ── */
+function Step4Enterprise({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <Label text="Lead Totali al Mese (attuali)"
+            hint="Numero di nuovi lead generati ogni mese in media."
+            formula={"Lead = Visitatori sito × Conversion rate\n\nOppure: somma contatti acquisiti da tutti i canali nel mese"} />
+          <TextInput val={data.leadMensili} set={v => set("leadMensili", v)} placeholder="Es. 500" />
+        </div>
+        <div>
+          <Label text="CAC Attuale"
+            hint="Quanto spendi in media per acquisire un nuovo cliente."
+            formula={"CAC = Budget Marketing totale ÷ Nuovi clienti acquisiti nello stesso periodo\n\nEs. 20.000€/mese ÷ 10 nuovi clienti = 2.000€ CAC"} />
+          <TextInput val={data.cacAttuale} set={v => set("cacAttuale", v)} placeholder="Es. 1500" prefix="€" />
+        </div>
+      </div>
+      <SliderField label="Tasso di Conversione MQL → SQL" val={data.tassoMqlSql} set={v => set("tassoMqlSql", v)}
+        min={1} max={80} suffix="%"
+        hint="Quanti MQL (Marketing Qualified Lead) diventano SQL (Sales Qualified Lead)."
+        formula={"MQL→SQL = SQL qualificati ÷ MQL totali × 100\n\nBenchmark B2B SaaS: 15–30%"} />
+      <SliderField label="Tasso di Chiusura SQL → Cliente" val={data.tassoSqlClose} set={v => set("tassoSqlClose", v)}
+        min={1} max={80} suffix="%"
+        hint="Quanti SQL diventano effettivamente clienti paganti."
+        formula={"Close rate = Contratti firmati ÷ SQL inviati a Sales × 100\n\nBenchmark B2B: 15–25%"} />
+      <SliderField label="Ciclo di Vendita Medio" val={data.cicloVendita} set={v => set("cicloVendita", v)}
+        min={1} max={365} step={5} suffix=" gg"
+        hint="Numero di giorni dal primo contatto alla firma del contratto."
+        formula={"Ciclo medio = Somma giorni di tutte le trattative chiuse ÷ numero trattative chiuse"} />
+    </div>
+  );
+}
+
+/* ── Step 4 PMI ── */
+function Step4PMI({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <Label text="Come trovano te i tuoi clienti attuali?" hint="Seleziona tutte le fonti applicabili." />
+        <MultiCheck val={data.comeTrovaClienti} set={v => set("comeTrovaClienti", v)}
+          options={["Passaparola","Social media","Google / SEO","Pubblicità online","Fiere / eventi","Contatto diretto (cold outreach)","Partner / agenti","Altro"]} />
+      </div>
+      <div>
+        <Label text="Quante opportunità commerciali gestisci ogni mese?" hint="Una 'opportunità' = una trattativa aperta con un potenziale cliente." />
+        <RadioGroup val={data.opportunitaMensili} set={v => set("opportunitaMensili", v)} options={[
+          { value: "0-5",   label: "0–5" },
+          { value: "5-15",  label: "5–15" },
+          { value: "15-30", label: "15–30" },
+          { value: "30-50", label: "30–50" },
+          { value: "50+",   label: "50+" },
+        ]} />
+      </div>
+      <div>
+        <Label text="Quante di queste trattative si concludono positivamente (circa)?" />
+        <RadioGroup val={data.tassoSuccessoPMI} set={v => set("tassoSuccessoPMI", v)} options={[
+          { value: "< 10%", label: "Meno del 10%" },
+          { value: "10-25%", label: "10–25%" },
+          { value: "25-50%", label: "25–50%" },
+          { value: "> 50%",  label: "Oltre il 50%" },
+        ]} />
+      </div>
+      <div>
+        <Label text="Quanto tempo passa di solito dal primo contatto all'acquisto?" />
+        <RadioGroup val={data.tempoChiusuraPMI} set={v => set("tempoChiusuraPMI", v)} options={[
+          { value: "giorni",  label: "Pochi giorni" },
+          { value: "settimane", label: "Qualche settimana" },
+          { value: "1-3mesi", label: "1–3 mesi" },
+          { value: "3-6mesi", label: "3–6 mesi" },
+          { value: "6m+",     label: "Oltre 6 mesi" },
+        ]} />
+      </div>
+      <FormulaBox title="Formule per calcolare le tue metriche di acquisizione" rows={[
+        { label: "CAC (Costo di Acquisizione Cliente):", formula: "CAC = Budget marketing mensile ÷ Nuovi clienti acquisiti nel mese" },
+        { label: "LTV (Lifetime Value):", formula: "LTV = Scontrino medio × Frequenza acquisti × Anni di vita media del cliente" },
+        { label: "Rapporto LTV/CAC sano:", formula: "LTV/CAC > 3x  (es. LTV 6.000€ / CAC 1.500€ = 4x — ottimo)" },
+        { label: "Tasso di conversione medio:", formula: "Conv. rate = Clienti acquisiti ÷ Contatti totali generati × 100" },
+      ]} />
+    </div>
+  );
+}
+
+/* ── Step 5 Enterprise ── */
+function Step5Enterprise({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
   return (
     <div className="space-y-5">
       <div>
@@ -326,28 +527,80 @@ function Step5({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
       <div>
         <Label text="Principale Differenziatore Competitivo" hint="In cosa sei unico rispetto alla concorrenza?" />
         <SelectInput val={data.differenziatore} set={v => set("differenziatore", v)} options={[
-          "Prezzo / Value for Money", "UX / Facilità d'uso", "Integrazioni native",
-          "Customer Success dedicato", "Specializzazione verticale", "AI / Automazione avanzata",
-          "Compliance / Sicurezza", "Time-to-value più rapido", "Altro",
+          "Prezzo / Value for Money","UX / Facilità d'uso","Integrazioni native",
+          "Customer Success dedicato","Specializzazione verticale","AI / Automazione avanzata",
+          "Compliance / Sicurezza","Time-to-value più rapido","Altro",
         ]} />
       </div>
       <SliderField label="NPS Attuale (Net Promoter Score)" val={data.nps} set={v => set("nps", v)}
-        min={-100} max={100} hint="Quanto i tuoi clienti ti raccomanderebbero? Scala da -100 a 100." />
+        min={-100} max={100}
+        hint="Quanto i tuoi clienti ti raccomanderebbero? Scala da -100 a 100."
+        formula={"NPS = % Promotori (9–10) - % Detrattori (0–6)\n\nBenchmark SaaS B2B eccellente: NPS > 50"} />
       <div>
         <Label text="Maturità del Team Marketing" hint="Valuta onestamente il livello attuale del tuo team e dei processi." />
         <RadioGroup val={data.maturitaMktg} set={v => set("maturitaMktg", v)} options={[
-          { value: "Nascente",     label: "Nascente — appena avviato" },
-          { value: "In sviluppo",  label: "In sviluppo — processi parziali" },
-          { value: "Strutturato",  label: "Strutturato — team e tool attivi" },
-          { value: "Avanzato",     label: "Avanzato — data-driven & scalable" },
+          { value: "Nascente",    label: "Nascente — appena avviato" },
+          { value: "In sviluppo", label: "In sviluppo — processi parziali" },
+          { value: "Strutturato", label: "Strutturato — team e tool attivi" },
+          { value: "Avanzato",    label: "Avanzato — data-driven & scalable" },
         ]} />
       </div>
     </div>
   );
 }
 
-/* ── Summary card ── */
+/* ── Step 5 PMI ── */
+function Step5PMI({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentData, v: any) => void }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <Label text="Chi sono i tuoi principali competitor?" hint="Anche indiretti o sostituti." />
+        <div className="space-y-2.5">
+          {(["competitor1","competitor2","competitor3"] as (keyof AssessmentData)[]).map((k, i) => (
+            <TextInput key={k} val={data[k] as string} set={v => set(k, v)} placeholder={`Competitor ${i + 1}`} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <Label text="Cosa ti differenzia dalla concorrenza?" />
+        <SelectInput val={data.differenziatore} set={v => set("differenziatore", v)} options={[
+          "Prezzo / Value for Money","Qualità del prodotto / servizio","Servizio clienti personalizzato",
+          "Specializzazione di nicchia","Velocità di consegna / risposta","Reputazione / fiducia locale",
+          "Esperienza del team","Altro",
+        ]} />
+      </div>
+      <div>
+        <Label text="Cosa vuoi implementare per prima cosa?" hint="Seleziona le priorità per i prossimi 3–6 mesi." />
+        <MultiCheck val={data.prossimaPriorita} set={v => set("prossimaPriorita", v)}
+          options={["Creare/migliorare il sito web","Avviare campagne pubblicitarie","Costruire una presenza social","Creare contenuti / blog",
+            "Implementare un CRM","Avviare email marketing","Definire un processo di vendita","Misurare i risultati"]} />
+      </div>
+      <div>
+        <Label text="Chi si occupa del marketing nella tua azienda?" />
+        <RadioGroup val={data.chiSiOccupa} set={v => set("chiSiOccupa", v)} options={[
+          { value: "io",         label: "Lo faccio io stesso" },
+          { value: "dipendente", label: "Un dipendente dedicato" },
+          { value: "agenzia",    label: "Un'agenzia esterna" },
+          { value: "freelance",  label: "Un freelance" },
+          { value: "nessuno",    label: "Per ora nessuno" },
+        ]} />
+      </div>
+      <div>
+        <Label text="Maturità del Marketing" hint="Dove ti collocheresti onestamente?" />
+        <RadioGroup val={data.maturitaMktg} set={v => set("maturitaMktg", v)} options={[
+          { value: "Nascente",    label: "Nascente — sto iniziando" },
+          { value: "In sviluppo", label: "Primissimi passi — qualcosa esiste" },
+          { value: "Strutturato", label: "Ho un processo — ma non misuro tutto" },
+          { value: "Avanzato",    label: "Misuro e ottimizzo regolarmente" },
+        ]} />
+      </div>
+    </div>
+  );
+}
+
+/* ── Summary ── */
 function SummaryCard({ data }: { data: AssessmentData }) {
+  const isPMI = data.mode === "pmi";
   const arr    = Number(data.arrAttuale)  || 0;
   const target = Number(data.arrTarget)   || 0;
   const growth = arr > 0 ? (((target - arr) / arr) * 100).toFixed(0) : "—";
@@ -359,27 +612,45 @@ function SummaryCard({ data }: { data: AssessmentData }) {
   const ltv    = Number(data.acvMedio) || 0;
   const ltvCac = cac > 0 ? (ltv / cac).toFixed(1) : "—";
 
+  const pmiKpis = (() => {
+    const fatMap: Record<string, string> = {
+      "< 100K €": "< 100K", "100K – 300K €": "~200K", "300K – 500K €": "~400K",
+      "500K – 1M €": "~750K", "1M – 3M €": "~2M", "> 3M €": "> 3M",
+    };
+    const budgetMap: Record<string, string> = {
+      "< 5K": "< 5K", "5-20K": "~12K", "20-50K": "~35K", "50-100K": "~75K", "> 100K": "> 100K",
+    };
+    return [
+      { label: "Fase Business",   val: data.faseBusiness || "—",           sub: data.obiettivoPrincipale || "",    color: C.blue   },
+      { label: "Fatturato",       val: fatMap[data.fatturatoPMI] || "—",   sub: `${data.clientiAttuali || "?"} clienti`, color: C.purple },
+      { label: "Budget Mktg",     val: budgetMap[data.budgetFascia] || "—",sub: `${data.canaliPMI.length} canali`, color: C.amber  },
+      { label: "Maturità",        val: data.maturitaMktg || "—",           sub: data.chiSiOccupa || "",            color: C.green  },
+    ];
+  })();
+
+  const kpis = isPMI ? pmiKpis : [
+    { label: "ARR Target",     val: target > 0 ? `€${(target/1000).toFixed(0)}K` : "—", sub: `+${growth}%`, color: C.blue   },
+    { label: "Lead → Clienti", val: `${leads}→${won}/mo`, sub: `SQL ${sql}/mo`,          color: C.purple },
+    { label: "Budget Annuale", val: budget > 0 ? `€${(budget/1000).toFixed(0)}K` : "—", sub: `${data.canaliAttivi.length} canali`, color: C.amber },
+    { label: "LTV / CAC",      val: ltvCac,               sub: `CAC €${cac.toLocaleString("it-IT")}`, color: C.green },
+  ];
+
   return (
     <div className="space-y-5">
       <div className="text-center py-6">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl"
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white"
           style={{ backgroundColor: C.green }}>
-          ✓
+          <CheckCircle2 className="w-8 h-8" />
         </div>
         <h3 className="text-xl font-extrabold mb-1">Assessment Completato!</h3>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Hai risposto a tutte le domande. Ecco il riepilogo del tuo profilo aziendale.
-          Tutti i dati sono stati salvati e verranno usati per calcoli e previsioni.
+          {isPMI
+            ? "Il tuo profilo PMI è stato salvato. Hai risposto a tutte le domande qualitative."
+            : "Hai risposto a tutte le domande. I dati sono stati salvati e usati per calcoli e previsioni."}
         </p>
       </div>
-
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "ARR Target",     val: target > 0 ? `€${(target/1000).toFixed(0)}K` : "—", sub: `+${growth}%`, color: C.blue   },
-          { label: "Lead → Clienti", val: `${leads}→${won}/mo`, sub: `SQL ${sql}/mo`,          color: C.purple },
-          { label: "Budget Annuale", val: budget > 0 ? `€${(budget/1000).toFixed(0)}K` : "—", sub: `${data.canaliAttivi.length} canali`, color: C.amber },
-          { label: "LTV / CAC",      val: ltvCac,               sub: `CAC €${cac.toLocaleString("it-IT")}`,       color: C.green  },
-        ].map((k, i) => (
+        {kpis.map((k, i) => (
           <div key={i} className="rounded-xl border border-border p-3 text-center">
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">{k.label}</p>
             <p className="text-lg font-extrabold" style={{ color: k.color }}>{k.val}</p>
@@ -387,21 +658,46 @@ function SummaryCard({ data }: { data: AssessmentData }) {
           </div>
         ))}
       </div>
-
       <div className="rounded-xl border p-4 space-y-2" style={{ backgroundColor: `${C.blue}06`, borderColor: `${C.blue}20` }}>
         <div className="flex items-start gap-2">
           <Sparkles className="w-4 h-4 shrink-0 mt-0.5" style={{ color: C.blue }} />
           <div>
             <p className="text-sm font-bold mb-1" style={{ color: C.blue }}>Cosa succede adesso</p>
             <ul className="text-[12px] text-muted-foreground space-y-1">
-              <li>→ <strong>Dashboard</strong>: i tuoi KPI sono ora personalizzati sul tuo funnel reale</li>
-              <li>→ <strong>ROI Calculator</strong>: i valori di default riflettono il tuo budget e ACV</li>
-              <li>→ <strong>AI Strategist</strong>: il contesto aziendale è incluso in ogni analisi AI</li>
-              <li>→ <strong>Piano Marketing</strong>: obiettivi e roadmap allineati al tuo ARR target</li>
+              <li>→ <strong>Dashboard</strong>: i tuoi KPI sono personalizzati sul tuo profilo reale</li>
+              <li>→ <strong>ROI Calculator</strong>: i valori di default riflettono il tuo budget</li>
+              <li>→ <strong>AI Strategist</strong>: il contesto aziendale guida ogni analisi AI</li>
+              <li>→ <strong>Piano Marketing</strong>: obiettivi allineati al tuo target</li>
             </ul>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Mode Selector ── */
+function ModeSelector({ mode, onChange }: { mode: "enterprise" | "pmi"; onChange: (m: "enterprise" | "pmi") => void }) {
+  return (
+    <div className="flex gap-3 mb-6">
+      {([
+        { id: "enterprise", label: "Enterprise", sub: "Metriche quantitative dettagliate", color: C.purple },
+        { id: "pmi",        label: "PMI",        sub: "Domande qualitative + guide ai calcoli", color: C.green },
+      ] as const).map(opt => (
+        <button key={opt.id} onClick={() => onChange(opt.id)}
+          className="flex-1 flex flex-col gap-1 px-4 py-3.5 rounded-xl border text-left transition-all"
+          style={mode === opt.id
+            ? { borderColor: `${opt.color}50`, backgroundColor: `${opt.color}10` }
+            : { borderColor: "var(--border)", backgroundColor: "transparent" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: mode === opt.id ? opt.color : "var(--muted-foreground)" }} />
+            <span className="text-sm font-bold" style={{ color: mode === opt.id ? opt.color : "var(--muted-foreground)" }}>
+              {opt.label}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground ml-4">{opt.sub}</p>
+        </button>
+      ))}
     </div>
   );
 }
@@ -426,7 +722,21 @@ export default function Assessment() {
   }, [done, data]);
 
   const stepColor = STEPS[step - 1]?.color ?? C.blue;
-  const pct       = ((step - 1) / (STEPS.length)) * 100;
+  const isPMI = data.mode === "pmi";
+
+  const STEP_TITLES = isPMI ? [
+    { title: "Profilo Aziendale",       sub: "Raccontaci chi sei e in quale mercato operi" },
+    { title: "Fase & Obiettivi",         sub: "Dove si trova la tua azienda e dove vuole arrivare" },
+    { title: "Marketing & Budget",       sub: "Come comunichi e quanto investi" },
+    { title: "Vendite & Acquisizione",   sub: "Come acquisisci e converti i clienti" },
+    { title: "Concorrenza & Priorità",   sub: "Il tuo contesto competitivo e i prossimi passi" },
+  ] : [
+    { title: "Profilo Aziendale",        sub: "Raccontaci chi sei e in quale mercato operi" },
+    { title: "Obiettivi di Crescita",    sub: "Definisci i target di business per i prossimi 12 mesi" },
+    { title: "Budget & Canali",          sub: "Come investi il tuo budget marketing?" },
+    { title: "Performance del Funnel",   sub: "Le metriche attuali del tuo processo di acquisizione" },
+    { title: "Competitor & Posizione",   sub: "Il tuo contesto competitivo e il livello di maturità" },
+  ];
 
   const handleNext = () => {
     if (step < STEPS.length) { setStep(s => s + 1); window.scrollTo(0, 0); }
@@ -437,20 +747,21 @@ export default function Assessment() {
     }
   };
 
-  const STEP_TITLES = [
-    { title: "Profilo Aziendale",        sub: "Raccontaci chi sei e in quale mercato operi" },
-    { title: "Obiettivi di Crescita",    sub: "Definisci i target di business per i prossimi 12 mesi" },
-    { title: "Budget & Canali",          sub: "Come investi il tuo budget marketing?" },
-    { title: "Performance del Funnel",   sub: "Le metriche attuali del tuo processo di acquisizione" },
-    { title: "Competitor & Posizione",   sub: "Il tuo contesto competitivo e il livello di maturità" },
-  ];
+  const renderStep = () => {
+    if (step === 1) return <Step1 data={data} set={setField} />;
+    if (step === 2) return isPMI ? <Step2PMI data={data} set={setField} /> : <Step2Enterprise data={data} set={setField} />;
+    if (step === 3) return isPMI ? <Step3PMI data={data} set={setField} /> : <Step3Enterprise data={data} set={setField} />;
+    if (step === 4) return isPMI ? <Step4PMI data={data} set={setField} /> : <Step4Enterprise data={data} set={setField} />;
+    if (step === 5) return isPMI ? <Step5PMI data={data} set={setField} /> : <Step5Enterprise data={data} set={setField} />;
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-[860px] mx-auto px-5 py-8">
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold"
               style={{ backgroundColor: C.blue }}>A</div>
@@ -460,9 +771,14 @@ export default function Assessment() {
             Configura il tuo profilo aziendale
           </h1>
           <p className="text-muted-foreground text-[14px]">
-            Rispondi a {STEPS.length} sezioni di domande per personalizzare calcoli, previsioni e strategie su misura per la tua azienda.
+            Scegli il tipo di assessment in base alla dimensione e alla maturità della tua azienda.
           </p>
         </div>
+
+        {/* Mode selector — always visible unless done */}
+        {!done && (
+          <ModeSelector mode={data.mode} onChange={m => { setField("mode", m); setStep(1); setDone(false); }} />
+        )}
 
         {!done ? (
           <>
@@ -473,100 +789,72 @@ export default function Assessment() {
                 const current = step === s.id;
                 return (
                   <div key={s.id} className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => step > s.id && setStep(s.id)}
-                      disabled={step <= s.id && !past}
+                    <button onClick={() => step > s.id && setStep(s.id)} disabled={step <= s.id && !past}
                       className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all"
                       style={current
                         ? { backgroundColor: `${s.color}15`, color: s.color, fontWeight: 700, border: `1.5px solid ${s.color}40` }
-                        : past
-                          ? { color: C.green, cursor: "pointer" }
-                          : { color: "var(--muted-foreground)", cursor: "default" }}>
+                        : past ? { color: C.green, cursor: "pointer" }
+                               : { color: "var(--muted-foreground)", cursor: "default" }}>
                       <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
                         style={{ backgroundColor: past ? C.green : current ? s.color : "var(--muted-foreground)" }}>
-                        {past ? "✓" : s.id}
+                        {past ? <CheckCircle2 className="w-3 h-3" /> : s.id}
                       </span>
                       {s.label}
                     </button>
-                    {i < STEPS.length - 1 && <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" />}
+                    {i < STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
                   </div>
                 );
               })}
             </div>
 
-            {/* Progress bar */}
-            <div className="mb-6">
-              <div className="flex justify-between text-[11px] text-muted-foreground mb-1.5">
-                <span>Progresso</span>
-                <span className="font-bold">{step} / {STEPS.length}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct + 20}%`, backgroundColor: stepColor }} />
-              </div>
-            </div>
-
-            {/* Step card */}
-            <Card className="border-2 mb-6" style={{ borderColor: `${stepColor}25` }}>
-              <div className="h-1 rounded-t-xl" style={{ backgroundColor: stepColor }} />
-              <CardContent className="p-6 sm:p-8">
-                <div className="flex items-start gap-3 mb-7">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white"
-                    style={{ backgroundColor: stepColor }}>
-                    {STEPS[step - 1].icon}
-                  </div>
-                  <div>
-                    <h2 className="font-extrabold text-lg leading-tight">{STEP_TITLES[step - 1].title}</h2>
-                    <p className="text-[13px] text-muted-foreground mt-0.5">{STEP_TITLES[step - 1].sub}</p>
+            {/* Card */}
+            <Card>
+              <CardContent className="px-6 py-6">
+                <div className="mb-5 pb-4 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${stepColor}20` }}>
+                      <span style={{ color: stepColor }}>{STEPS[step-1].icon}</span>
+                    </div>
+                    <div>
+                      <h2 className="font-extrabold text-[17px] leading-tight">{STEP_TITLES[step-1].title}</h2>
+                      <p className="text-[12px] text-muted-foreground">{STEP_TITLES[step-1].sub}</p>
+                    </div>
+                    <span className="ml-auto text-[11px] font-bold px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: `${stepColor}15`, color: stepColor }}>
+                      {step} / {STEPS.length}
+                    </span>
                   </div>
                 </div>
-
-                {step === 1 && <Step1 data={data} set={setField} />}
-                {step === 2 && <Step2 data={data} set={setField} />}
-                {step === 3 && <Step3 data={data} set={setField} />}
-                {step === 4 && <Step4 data={data} set={setField} />}
-                {step === 5 && <Step5 data={data} set={setField} />}
+                {renderStep()}
               </CardContent>
             </Card>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => { setStep(s => s - 1); window.scrollTo(0, 0); }}
+            <div className="flex items-center justify-between mt-5">
+              <button onClick={() => { if (step > 1) { setStep(s => s - 1); window.scrollTo(0, 0); } }}
                 disabled={step === 1}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors disabled:opacity-40">
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/30">
                 <ChevronLeft className="w-4 h-4" /> Indietro
               </button>
-              <span className="text-xs text-muted-foreground hidden sm:block">
-                I dati vengono salvati automaticamente
-              </span>
               <button onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
-                style={{ backgroundColor: stepColor }}>
-                {step < STEPS.length ? <><span>Avanti</span><ChevronRight className="w-4 h-4" /></> : <><span>Completa Assessment</span><CheckCircle2 className="w-4 h-4" /></>}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
+                style={{ background: `linear-gradient(135deg, ${stepColor}, ${C.blue})` }}>
+                {step < STEPS.length ? <><span>Avanti</span><ChevronRight className="w-4 h-4" /></> : <><span>Completa Assessment</span><ArrowRight className="w-4 h-4" /></>}
               </button>
             </div>
           </>
         ) : (
           <>
-            <Card className="border-2 mb-6" style={{ borderColor: `${C.green}30` }}>
-              <div className="h-1 rounded-t-xl" style={{ backgroundColor: C.green }} />
-              <CardContent className="p-6 sm:p-8">
-                <SummaryCard data={data} />
-              </CardContent>
-            </Card>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <button onClick={() => { setDone(false); setStep(1); }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors">
-                <ChevronLeft className="w-4 h-4" /> Modifica risposte
-              </button>
-              <button onClick={() => navigate("/roi-calculator")}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold border transition-colors hover:opacity-85"
-                style={{ borderColor: `${C.amber}40`, backgroundColor: `${C.amber}10`, color: C.amber }}>
-                ROI Calculator <ArrowRight className="w-4 h-4" />
+            <Card><CardContent className="px-6 py-6"><SummaryCard data={data} /></CardContent></Card>
+            <div className="flex justify-center gap-3 mt-5">
+              <button onClick={() => { setStep(1); setDone(false); }}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all hover:bg-muted/30">
+                Modifica risposte
               </button>
               <button onClick={() => navigate("/")}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
-                style={{ backgroundColor: C.blue }}>
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
+                style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.purple})` }}>
                 Vai alla Dashboard <ArrowRight className="w-4 h-4" />
               </button>
             </div>

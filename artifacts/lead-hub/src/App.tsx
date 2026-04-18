@@ -8,11 +8,13 @@ import RoiCalculator from "@/pages/RoiCalculator";
 import AiStrategist from "@/pages/AiStrategist";
 import PianoMarketing from "@/pages/PianoMarketing";
 import ImportDati from "@/pages/ImportDati";
+import Reporting from "@/pages/Reporting";
+import Integrazioni from "@/pages/Integrazioni";
 import Assessment, { ASSESSMENT_KEY } from "@/pages/Assessment";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Calculator, Bot, Map, Upload,
-  ClipboardList, ChevronRight, Users,
+  ClipboardList, ChevronRight, Users, BarChart3, Plug,
 } from "lucide-react";
 
 const queryClient = new QueryClient({
@@ -22,7 +24,6 @@ const queryClient = new QueryClient({
 const GRAD = "linear-gradient(135deg, #7C3AED 0%, #2563EB 55%, #F97316 100%)";
 const GRAD_ORANGE_PURPLE = "linear-gradient(135deg, #F97316 0%, #7C3AED 100%)";
 
-/* ── CoraJE Logo Mark SVG ── */
 function CoraJEMark({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
@@ -33,21 +34,17 @@ function CoraJEMark({ size = 32 }: { size?: number }) {
           <stop offset="100%" stopColor="#3B82F6" />
         </linearGradient>
       </defs>
-      {/* Rounded bg */}
       <rect width="32" height="32" rx="8" fill="url(#cjLogo)" opacity="0.18" />
-      {/* Stylised 'e' arc — top half */}
       <path d="M23 16H10C10 11.6 12.7 8 16.5 8C20.3 8 23 11.6 23 16Z"
         stroke="url(#cjLogo)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      {/* Bottom arc open */}
       <path d="M10 16C10 20.4 12.7 23 16.5 23C19.2 23 21.5 21.5 22.5 19"
         stroke="url(#cjLogo)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      {/* Diagonal accent (flash) */}
       <path d="M20.5 6L25 10.5" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 
-const NAV_ITEMS = [
+const NAV_MAIN = [
   { href: "/assessment",      label: "Assessment",      icon: ClipboardList,   desc: "Profilo aziendale", highlight: true },
   { href: "/",                label: "Dashboard",       icon: LayoutDashboard, desc: "KPI & Funnel" },
   { href: "/roi-calculator",  label: "ROI Calculator",  icon: Calculator,      desc: "Simulatore ROI" },
@@ -55,6 +52,39 @@ const NAV_ITEMS = [
   { href: "/piano-marketing", label: "Piano Marketing", icon: Map,             desc: "Strategia" },
   { href: "/import-dati",     label: "Import Dati",     icon: Upload,          desc: "CSV / Excel" },
 ];
+
+const NAV_EXTRA = [
+  { href: "/reporting",    label: "Reporting",     icon: BarChart3, desc: "Report consolidati" },
+  { href: "/integrazioni", label: "Integrazioni",  icon: Plug,      desc: "CRM & Tools" },
+];
+
+function NavItem({ item, active, assessed }: { item: typeof NAV_MAIN[0]; active: boolean; assessed: boolean }) {
+  const showDot = (item as any).highlight && !assessed;
+  const Icon = item.icon;
+  return (
+    <Link href={item.href}
+      className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative overflow-hidden"
+      style={active
+        ? { background: "linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(37,99,235,0.18) 100%)", border: "1px solid rgba(124,58,237,0.35)" }
+        : { border: "1px solid transparent" }}>
+      {active && <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full" style={{ background: GRAD }} />}
+      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all"
+        style={active
+          ? { background: GRAD, boxShadow: "0 2px 12px rgba(124,58,237,0.45)" }
+          : { background: "rgba(255,255,255,0.06)" }}>
+        <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : "rgba(255,255,255,0.55)" }} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] leading-none truncate" style={{ color: active ? "#fff" : "rgba(255,255,255,0.65)", fontWeight: active ? 700 : 500 }}>
+          {item.label}
+        </p>
+        <p className="text-[10px] mt-0.5 truncate" style={{ color: "rgba(255,255,255,0.3)" }}>{item.desc}</p>
+      </div>
+      {showDot && !active && <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: "#F97316" }} />}
+      {active && <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "rgba(255,255,255,0.4)" }} />}
+    </Link>
+  );
+}
 
 function Sidebar() {
   const [location] = useLocation();
@@ -69,82 +99,47 @@ function Sidebar() {
 
   return (
     <aside className="w-[228px] shrink-0 flex flex-col print:hidden"
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(180deg, #090714 0%, #0D0A1E 60%, #100A1A 100%)",
-        borderRight: "1px solid rgba(124,58,237,0.18)",
-      }}>
+      style={{ minHeight: "100vh", background: "linear-gradient(180deg, #090714 0%, #0D0A1E 60%, #100A1A 100%)", borderRight: "1px solid rgba(124,58,237,0.18)" }}>
 
       {/* Brand */}
       <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}>
         <div className="flex items-center gap-3">
           <CoraJEMark size={34} />
           <div>
-            <p className="font-extrabold text-[16px] tracking-tight leading-none"
+            <p className="font-extrabold text-[15px] tracking-tight leading-none"
               style={{ background: GRAD_ORANGE_PURPLE, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              CoraJE
+              Lead Hub
             </p>
-            <p className="text-[9px] font-bold tracking-[0.2em] uppercase mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Digital Marketing
+            <p className="text-[8.5px] font-semibold tracking-[0.16em] uppercase mt-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
+              Growth Intelligence Platform
             </p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-5 space-y-1">
+      {/* Nav main */}
+      <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
         <p className="text-[9px] font-bold uppercase tracking-[0.18em] px-3 mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>
-          Navigazione
+          Piattaforma
         </p>
-        {NAV_ITEMS.map(item => {
-          const active  = location === item.href;
-          const showDot = (item as any).highlight && !assessed;
-          const Icon    = item.icon;
-          return (
-            <Link key={item.href} href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative overflow-hidden"
-              style={active
-                ? { background: "linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(37,99,235,0.18) 100%)", border: "1px solid rgba(124,58,237,0.35)" }
-                : { border: "1px solid transparent" }}>
+        {NAV_MAIN.map(item => (
+          <NavItem key={item.href} item={item} active={location === item.href} assessed={assessed} />
+        ))}
 
-              {/* Active left accent bar */}
-              {active && (
-                <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full" style={{ background: GRAD }} />
-              )}
-
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all"
-                style={active
-                  ? { background: GRAD, boxShadow: "0 2px 12px rgba(124,58,237,0.45)" }
-                  : { background: "rgba(255,255,255,0.06)" }}>
-                <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : "rgba(255,255,255,0.55)" }} />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] leading-none truncate font-semibold"
-                  style={{ color: active ? "#fff" : "rgba(255,255,255,0.65)", fontWeight: active ? 700 : 500 }}>
-                  {item.label}
-                </p>
-                <p className="text-[10px] mt-0.5 truncate" style={{ color: "rgba(255,255,255,0.3)" }}>
-                  {item.desc}
-                </p>
-              </div>
-
-              {showDot && !active && (
-                <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: "#F97316" }} />
-              )}
-              {active && (
-                <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "rgba(255,255,255,0.4)" }} />
-              )}
-            </Link>
-          );
-        })}
+        <div className="pt-4 pb-1">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] px-3 mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>
+            Sezioni Collaterali
+          </p>
+          {NAV_EXTRA.map(item => (
+            <NavItem key={item.href} item={item as any} active={location === item.href} assessed={assessed} />
+          ))}
+        </div>
       </nav>
 
       {/* Footer */}
       <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(124,58,237,0.15)" }}>
         <div className="flex items-center gap-2.5 px-2 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.04)" }}>
-          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: GRAD }}>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: GRAD }}>
             <Users className="w-3.5 h-3.5 text-white" />
           </div>
           <div className="min-w-0">
@@ -169,6 +164,8 @@ function AppLayout() {
           <Route path="/ai-strategist"   component={AiStrategist} />
           <Route path="/piano-marketing" component={PianoMarketing} />
           <Route path="/import-dati"     component={ImportDati} />
+          <Route path="/reporting"       component={Reporting} />
+          <Route path="/integrazioni"    component={Integrazioni} />
           <Route component={NotFound} />
         </Switch>
       </main>
@@ -177,10 +174,7 @@ function AppLayout() {
 }
 
 function App() {
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
+  useEffect(() => { document.documentElement.classList.add("dark"); }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

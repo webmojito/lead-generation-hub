@@ -1,8 +1,8 @@
-# Lead Generation Intelligence Hub
+# Lead Hub — Growth Intelligence Platform
 
 ## Overview
 
-A full-stack B2B marketing intelligence dashboard (Lead Intelligence Hub) built with React + Vite (frontend) and Express (backend). Features a dark-themed dashboard with real-time KPI tracking, funnel velocity charts, channel performance analysis, and top/underperforming channel panels.
+Full-stack B2B marketing intelligence platform (Lead Hub — Growth Intelligence Platform) built with React + Vite (frontend) and Express (backend). Features CoraJE brand, forced dark mode, purple/blue/orange gradient design system, 8 pages with Lucide icons (no emojis).
 
 ## Artifacts
 
