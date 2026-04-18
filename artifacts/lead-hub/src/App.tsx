@@ -8,7 +8,8 @@ import RoiCalculator from "@/pages/RoiCalculator";
 import AiStrategist from "@/pages/AiStrategist";
 import PianoMarketing from "@/pages/PianoMarketing";
 import ImportDati from "@/pages/ImportDati";
-import { useEffect } from "react";
+import Assessment, { ASSESSMENT_KEY } from "@/pages/Assessment";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
@@ -17,6 +18,7 @@ const queryClient = new QueryClient({
 const PRIMARY = "#2563EB";
 
 const NAV_ITEMS = [
+  { href: "/assessment",      label: "Assessment",      icon: "📋", desc: "Profilo aziendale", highlight: true },
   { href: "/",                label: "Dashboard",       icon: "📊", desc: "KPI & Funnel" },
   { href: "/roi-calculator",  label: "ROI Calculator",  icon: "🧮", desc: "Simulatore" },
   { href: "/ai-strategist",   label: "AI Strategist",   icon: "🤖", desc: "Analisi AI" },
@@ -26,6 +28,15 @@ const NAV_ITEMS = [
 
 function Sidebar() {
   const [location] = useLocation();
+  const [assessed, setAssessed] = useState(!!localStorage.getItem(ASSESSMENT_KEY));
+
+  useEffect(() => {
+    const check = () => setAssessed(!!localStorage.getItem(ASSESSMENT_KEY));
+    window.addEventListener("storage", check);
+    const interval = setInterval(check, 1000);
+    return () => { window.removeEventListener("storage", check); clearInterval(interval); };
+  }, []);
+
   return (
     <aside className="w-[220px] shrink-0 flex flex-col border-r border-border bg-card print:hidden" style={{ minHeight: "100vh" }}>
       {/* Brand */}
@@ -48,7 +59,8 @@ function Sidebar() {
           Navigazione
         </p>
         {NAV_ITEMS.map(item => {
-          const active = location === item.href;
+          const active  = location === item.href;
+          const showDot = (item as any).highlight && !assessed;
           return (
             <Link key={item.href} href={item.href}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group"
@@ -56,7 +68,7 @@ function Sidebar() {
                 ? { backgroundColor: `${PRIMARY}12`, color: PRIMARY, fontWeight: 700 }
                 : {}}>
               <span className="text-base w-5 text-center shrink-0">{item.icon}</span>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-[13px] leading-none truncate" style={active ? { color: PRIMARY, fontWeight: 700 } : { color: "var(--foreground)", fontWeight: 500 }}>
                   {item.label}
                 </p>
@@ -64,6 +76,9 @@ function Sidebar() {
                   {item.desc}
                 </p>
               </div>
+              {showDot && !active && (
+                <span className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ backgroundColor: "#F97316" }} />
+              )}
               {active && (
                 <div className="ml-auto w-1.5 h-5 rounded-full shrink-0" style={{ backgroundColor: PRIMARY }} />
               )}
@@ -95,6 +110,7 @@ function AppLayout() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto" style={{ minHeight: "100vh" }}>
         <Switch>
+          <Route path="/assessment"      component={Assessment} />
           <Route path="/"                component={Dashboard} />
           <Route path="/roi-calculator"  component={RoiCalculator} />
           <Route path="/ai-strategist"   component={AiStrategist} />
