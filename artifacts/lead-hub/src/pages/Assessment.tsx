@@ -6,6 +6,7 @@ import {
   Building2, Target, DollarSign, TrendingUp, BarChart2,
   CheckCircle2, ChevronRight, ChevronLeft, ArrowRight,
   Sparkles, Info, ChevronDown, BookOpen, Calculator,
+  Rocket, Briefcase, Zap,
 } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
@@ -678,26 +679,68 @@ function SummaryCard({ data }: { data: AssessmentData }) {
 
 /* ── Mode Selector ── */
 function ModeSelector({ mode, onChange }: { mode: "enterprise" | "pmi"; onChange: (m: "enterprise" | "pmi") => void }) {
+  const opts = [
+    {
+      id: "enterprise" as const,
+      label: "Enterprise / Scale-up",
+      sub: "Per aziende con team marketing strutturato e KPI quantitativi. Inserisci ARR, CAC, LTV e metriche di funnel reali.",
+      color: C.purple,
+      icon: <Briefcase className="w-5 h-5" />,
+      tags: ["ARR & Metriche", "Team 5+ persone", "CRM avanzato"],
+    },
+    {
+      id: "pmi" as const,
+      label: "PMI & Startup",
+      sub: "Per realtà in crescita che partono dai fondamentali. Domande qualitative con guide ai calcoli integrate.",
+      color: C.green,
+      icon: <Rocket className="w-5 h-5" />,
+      tags: ["Qualitativo", "Guide ai calcoli", "Quick setup"],
+    },
+  ];
   return (
-    <div className="flex gap-3 mb-6">
-      {([
-        { id: "enterprise", label: "Enterprise", sub: "Metriche quantitative dettagliate", color: C.purple },
-        { id: "pmi",        label: "PMI",        sub: "Domande qualitative + guide ai calcoli", color: C.green },
-      ] as const).map(opt => (
-        <button key={opt.id} onClick={() => onChange(opt.id)}
-          className="flex-1 flex flex-col gap-1 px-4 py-3.5 rounded-xl border text-left transition-all"
-          style={mode === opt.id
-            ? { borderColor: `${opt.color}50`, backgroundColor: `${opt.color}10` }
-            : { borderColor: "var(--border)", backgroundColor: "transparent" }}>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: mode === opt.id ? opt.color : "var(--muted-foreground)" }} />
-            <span className="text-sm font-bold" style={{ color: mode === opt.id ? opt.color : "var(--muted-foreground)" }}>
-              {opt.label}
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground ml-4">{opt.sub}</p>
-        </button>
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-7">
+      {opts.map(opt => {
+        const active = mode === opt.id;
+        return (
+          <button key={opt.id} onClick={() => onChange(opt.id)}
+            className="relative text-left rounded-2xl border p-5 transition-all overflow-hidden group"
+            style={active
+              ? { borderColor: `${opt.color}55`, background: `linear-gradient(135deg, ${opt.color}12 0%, ${opt.color}06 100%)`, boxShadow: `0 0 0 1px ${opt.color}30, 0 8px 32px ${opt.color}15` }
+              : { borderColor: "rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)" }}>
+            {active && <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: `linear-gradient(90deg, ${opt.color}, transparent)` }} />}
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-all"
+                style={active
+                  ? { background: `linear-gradient(135deg, ${opt.color}30, ${opt.color}15)`, border: `1.5px solid ${opt.color}40`, color: opt.color }
+                  : { background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)" }}>
+                {opt.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-bold text-[14px]" style={{ color: active ? opt.color : "rgba(255,255,255,0.7)" }}>
+                    {opt.label}
+                  </p>
+                  {active && (
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                      style={{ background: `${opt.color}20`, color: opt.color }}>Selezionato</span>
+                  )}
+                </div>
+                <p className="text-[12px] leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>{opt.sub}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {opt.tags.map(tag => (
+                    <span key={tag} className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                      style={active
+                        ? { background: `${opt.color}15`, color: opt.color }
+                        : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)" }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -756,73 +799,96 @@ export default function Assessment() {
     return null;
   };
 
+  const progressPct = Math.round(((step - 1) / STEPS.length) * 100);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-[860px] mx-auto px-5 py-8">
 
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-              style={{ backgroundColor: C.blue }}>A</div>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Business Assessment</span>
+      {/* Hero header */}
+      <div className="relative overflow-hidden px-5 pt-8 pb-7"
+        style={{ borderBottom: "1px solid rgba(124,58,237,0.15)", background: "linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(37,99,235,0.06) 50%, rgba(249,115,22,0.04) 100%)" }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 80% at 80% -20%, rgba(124,58,237,0.12) 0%, transparent 70%)" }} />
+        <div className="max-w-[860px] mx-auto relative">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #7C3AED, #2563EB)", boxShadow: "0 4px 16px rgba(124,58,237,0.35)" }}>
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="font-extrabold text-[26px] tracking-tight leading-none text-white">
+                Profilo Aziendale
+              </h1>
+              <p className="text-[13px] mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>
+                Configura il contesto per personalizzare tutta la piattaforma
+              </p>
+            </div>
           </div>
-          <h1 className="font-extrabold text-[28px] tracking-tight leading-none mb-1.5">
-            Business Assessment
-          </h1>
-          <p className="text-muted-foreground text-[14px]">
-            Configura il tuo profilo aziendale in base alle caratteristiche e alla maturità della tua azienda.
-          </p>
+
+          {/* Mode selector */}
+          {!done && (
+            <ModeSelector mode={data.mode} onChange={m => { setField("mode", m); setStep(1); setDone(false); }} />
+          )}
+
+          {/* Progress bar */}
+          {!done && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 overflow-x-auto pb-0.5 flex-1 mr-4">
+                  {STEPS.map((s, i) => {
+                    const past    = step > s.id;
+                    const current = step === s.id;
+                    return (
+                      <div key={s.id} className="flex items-center gap-1.5 shrink-0">
+                        <button onClick={() => past && setStep(s.id)} disabled={!past && !current}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
+                          style={current
+                            ? { backgroundColor: `${s.color}18`, color: s.color, border: `1.5px solid ${s.color}40` }
+                            : past
+                              ? { color: C.green, cursor: "pointer" }
+                              : { color: "rgba(255,255,255,0.3)", cursor: "default" }}>
+                          <span className="w-4.5 h-4.5 w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+                            style={{ backgroundColor: past ? C.green : current ? s.color : "rgba(255,255,255,0.2)" }}>
+                            {past ? <CheckCircle2 className="w-2.5 h-2.5" /> : s.id}
+                          </span>
+                          {s.label}
+                        </button>
+                        {i < STEPS.length - 1 && <div className="w-4 h-px shrink-0" style={{ backgroundColor: past ? `${C.green}50` : "rgba(255,255,255,0.1)" }} />}
+                      </div>
+                    );
+                  })}
+                </div>
+                <span className="text-[12px] font-bold shrink-0" style={{ color: stepColor }}>
+                  {step}/{STEPS.length}
+                </span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${C.purple}, ${stepColor})` }} />
+              </div>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Mode selector — always visible unless done */}
-        {!done && (
-          <ModeSelector mode={data.mode} onChange={m => { setField("mode", m); setStep(1); setDone(false); }} />
-        )}
-
+      <div className="max-w-[860px] mx-auto px-5 py-6">
         {!done ? (
           <>
-            {/* Step indicators */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
-              {STEPS.map((s, i) => {
-                const past    = step > s.id;
-                const current = step === s.id;
-                return (
-                  <div key={s.id} className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => step > s.id && setStep(s.id)} disabled={step <= s.id && !past}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all"
-                      style={current
-                        ? { backgroundColor: `${s.color}15`, color: s.color, fontWeight: 700, border: `1.5px solid ${s.color}40` }
-                        : past ? { color: C.green, cursor: "pointer" }
-                               : { color: "var(--muted-foreground)", cursor: "default" }}>
-                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
-                        style={{ backgroundColor: past ? C.green : current ? s.color : "var(--muted-foreground)" }}>
-                        {past ? <CheckCircle2 className="w-3 h-3" /> : s.id}
-                      </span>
-                      {s.label}
-                    </button>
-                    {i < STEPS.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
-                  </div>
-                );
-              })}
-            </div>
-
             {/* Card */}
-            <Card>
+            <Card className="mb-5" style={{ border: `1px solid rgba(124,58,237,0.2)`, background: "rgba(255,255,255,0.02)" }}>
               <CardContent className="px-6 py-6">
-                <div className="mb-5 pb-4 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${stepColor}20` }}>
+                <div className="mb-5 pb-5 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${stepColor}20`, border: `1.5px solid ${stepColor}30` }}>
                       <span style={{ color: stepColor }}>{STEPS[step-1].icon}</span>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h2 className="font-extrabold text-[17px] leading-tight">{STEP_TITLES[step-1].title}</h2>
                       <p className="text-[12px] text-muted-foreground">{STEP_TITLES[step-1].sub}</p>
                     </div>
-                    <span className="ml-auto text-[11px] font-bold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: `${stepColor}15`, color: stepColor }}>
-                      {step} / {STEPS.length}
+                    <span className="text-[10px] font-bold px-3 py-1 rounded-full"
+                      style={{ backgroundColor: `${stepColor}15`, color: stepColor, border: `1px solid ${stepColor}30` }}>
+                      Sezione {step} di {STEPS.length}
                     </span>
                   </div>
                 </div>
@@ -831,30 +897,38 @@ export default function Assessment() {
             </Card>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between mt-5">
+            <div className="flex items-center justify-between">
               <button onClick={() => { if (step > 1) { setStep(s => s - 1); window.scrollTo(0, 0); } }}
                 disabled={step === 1}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/30">
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/5"
+                style={{ borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.65)" }}>
                 <ChevronLeft className="w-4 h-4" /> Indietro
               </button>
               <button onClick={handleNext}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
-                style={{ background: `linear-gradient(135deg, ${stepColor}, ${C.blue})` }}>
-                {step < STEPS.length ? <><span>Avanti</span><ChevronRight className="w-4 h-4" /></> : <><span>Completa Assessment</span><ArrowRight className="w-4 h-4" /></>}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${stepColor}, ${C.blue})`, boxShadow: `0 4px 20px ${stepColor}35` }}>
+                {step < STEPS.length
+                  ? <><span>Avanti</span><ChevronRight className="w-4 h-4" /></>
+                  : <><span>Completa Assessment</span><ArrowRight className="w-4 h-4" /></>}
               </button>
             </div>
           </>
         ) : (
           <>
-            <Card><CardContent className="px-6 py-6"><SummaryCard data={data} /></CardContent></Card>
+            <Card style={{ border: "1px solid rgba(22,163,74,0.25)", background: "rgba(22,163,74,0.04)" }}>
+              <CardContent className="px-6 py-6">
+                <SummaryCard data={data} />
+              </CardContent>
+            </Card>
             <div className="flex justify-center gap-3 mt-5">
               <button onClick={() => { setStep(1); setDone(false); }}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all hover:bg-muted/30">
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all hover:bg-white/5"
+                style={{ borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.65)" }}>
                 Modifica risposte
               </button>
               <button onClick={() => navigate("/")}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
-                style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.purple})` }}>
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.purple})`, boxShadow: "0 4px 20px rgba(37,99,235,0.35)" }}>
                 Vai alla Dashboard <ArrowRight className="w-4 h-4" />
               </button>
             </div>
