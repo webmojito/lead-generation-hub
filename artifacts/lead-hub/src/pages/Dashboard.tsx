@@ -112,7 +112,8 @@ function channelIcon(name: string) {
   if (n.includes("webinar") || n.includes("video") || n.includes("youtube")) return <Video  className="w-4 h-4" style={{ color: "#DC2626" }} />;
   if (n.includes("phone") || n.includes("call") || n.includes("telefon"))  return <Phone     className="w-4 h-4" style={{ color: "#16A34A" }} />;
   if (n.includes("outbound") || n.includes("cold"))                        return <PhoneCall className="w-4 h-4" style={{ color: "#E8006A" }} />;
-  if (n.includes("event") || n.includes("fiera") || n.includes("sito"))   return <CalendarDays className="w-4 h-4" style={{ color: "#F59E0B" }} />;
+  if (n.includes("sito") || n.includes("web") || n.includes("website"))   return <Globe        className="w-4 h-4" style={{ color: "#0891B2" }} />;
+  if (n.includes("event") || n.includes("fiera"))                         return <CalendarDays className="w-4 h-4" style={{ color: "#F59E0B" }} />;
   return <Globe className="w-4 h-4" style={{ color: "#6B7280" }} />;
 }
 

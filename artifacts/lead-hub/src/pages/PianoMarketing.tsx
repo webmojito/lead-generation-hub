@@ -534,7 +534,7 @@ export default function PianoMarketing() {
                     <p className="text-sm font-bold mb-3">Stack di Automazione</p>
                     {[
                       { tool: "HubSpot CRM",         use: "Lead nurturing & pipeline", status: "Attivo",     sc: C.green  },
-                      { tool: "LinkedIn Campaign Mgr", use: "ABM targeting & outreach",  status: "Attivo",     sc: C.green  },
+                      { tool: "LinkedIn Campaign",     use: "ABM targeting & outreach",  status: "Attivo",     sc: C.green  },
                       { tool: "Marketo Engage",       use: "Email sequences automation", status: "In Setup",   sc: C.amber  },
                       { tool: "Semrush",              use: "SEO & keyword intelligence", status: "Attivo",     sc: C.green  },
                       { tool: "6sense ABM",           use: "Intent data & account IQ",   status: "Pianificato", sc: C.blue  },

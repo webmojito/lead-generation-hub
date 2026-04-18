@@ -276,10 +276,9 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
 
       {/* Brand */}
       <div className="px-5 py-5 shrink-0" style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}>
-        <div className="flex items-center gap-3">
-          <CoraJEMark size={36} />
+        <div className="flex items-center gap-2">
           <div>
-            <p className="font-extrabold text-[15px] tracking-tight leading-none"
+            <p className="font-extrabold text-[17px] tracking-tight leading-none"
               style={{ background: GRAD_ORANGE_PURPLE, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               Lead Hub
             </p>
@@ -360,8 +359,7 @@ function MobileNav() {
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 print:hidden"
         style={{ background: "linear-gradient(180deg, #090714 0%, #0D0A1E 100%)", borderBottom: "1px solid rgba(124,58,237,0.18)", height: "56px" }}>
         <div className="flex items-center gap-2.5">
-          <CoraJEMark size={28} />
-          <p className="font-extrabold text-[14px]"
+          <p className="font-extrabold text-[16px]"
             style={{ background: GRAD_ORANGE_PURPLE, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             Lead Hub
           </p>
