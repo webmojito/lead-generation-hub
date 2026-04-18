@@ -6,7 +6,7 @@ import {
   Save, Info, ArrowUp, ArrowDown, DollarSign, Users,
 } from "lucide-react";
 
-const C = { blue: "#0079F2", purple: "#795EFF", green: "#009118", red: "#A60808", amber: "#F59E0B" };
+const C = { blue: "#E8006A", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
 
 function fmtK(v: number) { return new Intl.NumberFormat("it-IT", { notation: "compact", maximumFractionDigits: 1 }).format(v); }
 function fmt$(v: number) { return new Intl.NumberFormat("it-IT", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v); }

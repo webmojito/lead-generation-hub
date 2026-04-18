@@ -6,7 +6,7 @@ import {
   TrendingDown, TrendingUp, Globe, BookOpen, Clock, Tag, Filter,
 } from "lucide-react";
 
-const C = { blue: "#0079F2", purple: "#795EFF", green: "#009118", red: "#A60808", amber: "#F59E0B" };
+const C = { blue: "#E8006A", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 

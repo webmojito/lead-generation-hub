@@ -34,12 +34,12 @@ import {
 
 /* ─── costanti colori ─── */
 const C = {
-  blue:   "#0079F2",
-  purple: "#795EFF",
-  green:  "#009118",
-  red:    "#A60808",
-  amber:  "#F59E0B",
-  pink:   "#ec4899",
+  blue:   "#E8006A",
+  purple: "#7C3AED",
+  green:  "#16A34A",
+  red:    "#DC2626",
+  amber:  "#F97316",
+  pink:   "#E8006A",
 };
 
 const PERIODI = ["7G", "30G", "T1", "YTD"] as const;
@@ -159,7 +159,7 @@ function CanalDetailModal({ canale, onClose, isDark }: { canale: any; onClose: (
 
 /* ─── componente principale ─── */
 export default function Dashboard() {
-  const [isDark, setIsDark]           = useState(true);
+  const [isDark, setIsDark]           = useState(false);
   const [periodo, setPeriodo]         = useState<Periodo>("30G");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [autoRefreshMs, setAutoRefreshMs] = useState<number | null>(null);
@@ -225,8 +225,8 @@ export default function Dashboard() {
       ]
     : [];
 
-  const gridColor = isDark ? "rgba(255,255,255,0.07)" : "#e5e5e5";
-  const tickColor = isDark ? "#6b7280" : "#9ca3af";
+  const gridColor = isDark ? "rgba(255,255,255,0.07)" : "#e8eaf0";
+  const tickColor = isDark ? "#6b7280" : "#8b9ab5";
 
   /* ─── colonne tabella ─── */
   const tableColumns = useMemo<ColumnDef<any>[]>(() => [
