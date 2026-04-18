@@ -14,57 +14,96 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
 });
 
+const PRIMARY = "#2563EB";
+
 const NAV_ITEMS = [
-  { href: "/",               label: "Dashboard",       icon: "📊" },
-  { href: "/roi-calculator", label: "ROI Calculator",  icon: "🧮" },
-  { href: "/ai-strategist",  label: "AI Strategist",   icon: "🤖" },
-  { href: "/piano-marketing", label: "Piano Marketing", icon: "🗺️" },
-  { href: "/import-dati",    label: "Import Dati",     icon: "📥" },
+  { href: "/",                label: "Dashboard",       icon: "📊", desc: "KPI & Funnel" },
+  { href: "/roi-calculator",  label: "ROI Calculator",  icon: "🧮", desc: "Simulatore" },
+  { href: "/ai-strategist",   label: "AI Strategist",   icon: "🤖", desc: "Analisi AI" },
+  { href: "/piano-marketing", label: "Piano Marketing", icon: "🗺️", desc: "Strategia" },
+  { href: "/import-dati",     label: "Import Dati",     icon: "📥", desc: "CSV / Excel" },
 ];
 
-function NavBar() {
+function Sidebar() {
   const [location] = useLocation();
   return (
-    <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md print:hidden">
-      <div className="max-w-[1400px] mx-auto px-5 flex items-center gap-1 h-12">
-        <div className="flex items-center gap-1.5 mr-6">
-          <span className="text-lg">🚀</span>
-          <span className="font-extrabold text-sm tracking-tight text-foreground">Lead Hub</span>
+    <aside className="w-[220px] shrink-0 flex flex-col border-r border-border bg-card print:hidden" style={{ minHeight: "100vh" }}>
+      {/* Brand */}
+      <div className="px-5 py-5 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0"
+            style={{ backgroundColor: PRIMARY }}>
+            L
+          </div>
+          <div>
+            <p className="font-extrabold text-[15px] tracking-tight leading-none">Lead Hub</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Intelligence Platform</p>
+          </div>
         </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2 mb-3">
+          Navigazione
+        </p>
         {NAV_ITEMS.map(item => {
           const active = location === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all"
+            <Link key={item.href} href={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group"
               style={active
-                ? { backgroundColor: "rgba(0,121,242,0.15)", color: "#0079F2" }
-                : { color: "var(--muted-foreground)" }}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
+                ? { backgroundColor: `${PRIMARY}12`, color: PRIMARY, fontWeight: 700 }
+                : {}}>
+              <span className="text-base w-5 text-center shrink-0">{item.icon}</span>
+              <div className="min-w-0">
+                <p className="text-[13px] leading-none truncate" style={active ? { color: PRIMARY, fontWeight: 700 } : { color: "var(--foreground)", fontWeight: 500 }}>
+                  {item.label}
+                </p>
+                <p className="text-[10px] mt-0.5 truncate" style={{ color: "var(--muted-foreground)" }}>
+                  {item.desc}
+                </p>
+              </div>
+              {active && (
+                <div className="ml-auto w-1.5 h-5 rounded-full shrink-0" style={{ backgroundColor: PRIMARY }} />
+              )}
             </Link>
           );
         })}
+      </nav>
+
+      {/* Footer sidebar */}
+      <div className="px-4 py-4 border-t border-border">
+        <div className="flex items-center gap-2.5 px-2">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+            style={{ backgroundColor: PRIMARY }}>
+            MK
+          </div>
+          <div className="min-w-0">
+            <p className="text-[12px] font-semibold truncate">Marketing Team</p>
+            <p className="text-[10px] text-muted-foreground truncate">Q2 2025</p>
+          </div>
+        </div>
       </div>
-    </nav>
+    </aside>
   );
 }
 
-function Router() {
+function AppLayout() {
   return (
-    <>
-      <NavBar />
-      <Switch>
-        <Route path="/"                component={Dashboard} />
-        <Route path="/roi-calculator"  component={RoiCalculator} />
-        <Route path="/ai-strategist"   component={AiStrategist} />
-        <Route path="/piano-marketing" component={PianoMarketing} />
-        <Route path="/import-dati"     component={ImportDati} />
-        <Route component={NotFound} />
-      </Switch>
-    </>
+    <div className="flex" style={{ minHeight: "100vh" }}>
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto" style={{ minHeight: "100vh" }}>
+        <Switch>
+          <Route path="/"                component={Dashboard} />
+          <Route path="/roi-calculator"  component={RoiCalculator} />
+          <Route path="/ai-strategist"   component={AiStrategist} />
+          <Route path="/piano-marketing" component={PianoMarketing} />
+          <Route path="/import-dati"     component={ImportDati} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
@@ -77,7 +116,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
+          <AppLayout />
         </WouterRouter>
         <Toaster />
       </TooltipProvider>

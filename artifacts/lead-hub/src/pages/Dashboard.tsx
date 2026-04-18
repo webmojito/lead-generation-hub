@@ -34,7 +34,7 @@ import {
 
 /* ─── costanti colori ─── */
 const C = {
-  blue:   "#E8006A",
+  blue:   "#2563EB",
   purple: "#7C3AED",
   green:  "#16A34A",
   red:    "#DC2626",

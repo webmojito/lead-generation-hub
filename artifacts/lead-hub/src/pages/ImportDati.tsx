@@ -1,13 +1,15 @@
 import { useState, useRef, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Upload, Clipboard, AlertTriangle, CheckCircle2, XCircle,
   ChevronDown, MoreVertical, FileSpreadsheet, Loader2, Trash2,
+  Download, RefreshCw, Eye,
 } from "lucide-react";
 
-const C = { blue: "#E8006A", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
+const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
 
 const TARGET_FIELDS = [
   "Seleziona campo", "Nome", "Cognome", "Email", "Telefono",
@@ -45,7 +47,10 @@ export default function ImportDati() {
   const [isImporting, setImporting]   = useState(false);
   const [importDone, setImportDone]   = useState(false);
   const [importProgress, setProgress] = useState(0);
+  const [showAll, setShowAll]         = useState(false);
+  const [openMenu, setOpenMenu]       = useState<number | null>(null);
   const fileRef                       = useRef<HTMLInputElement>(null);
+  const { toast }                     = useToast();
 
   const handleFiles = useCallback((files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -131,7 +136,23 @@ export default function ImportDati() {
                     Sfoglia File
                   </button>
                   <span className="text-sm text-muted-foreground">o</span>
-                  <button className="px-5 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors flex items-center gap-2">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        if (text.trim()) {
+                          const blob = new Blob([text], { type: "text/csv" });
+                          const f = new File([blob], "clipboard_data.csv", { type: "text/csv" });
+                          setFile(f); setImportDone(false); setProgress(0);
+                          toast({ title: "Dati incollati", description: `${text.split("\n").length} righe rilevate da clipboard.` });
+                        } else {
+                          toast({ title: "Clipboard vuota", description: "Copia prima i dati CSV da incollare." });
+                        }
+                      } catch {
+                        toast({ title: "Permesso negato", description: "Consenti l'accesso alla clipboard dal browser." });
+                      }
+                    }}
+                    className="px-5 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors flex items-center gap-2">
                     <Clipboard className="w-4 h-4" /> Incolla Dati
                   </button>
                 </div>
@@ -285,7 +306,9 @@ export default function ImportDati() {
               <CardTitle className="text-base font-bold">Attività Recente 🗂️</CardTitle>
               <CardDescription className="text-xs mt-0.5">Storico degli ultimi import</CardDescription>
             </div>
-            <button className="text-xs font-semibold" style={{ color: C.blue }}>Vedi Tutti →</button>
+            <button onClick={() => setShowAll(v => !v)} className="text-xs font-semibold" style={{ color: C.blue }}>
+            {showAll ? "Mostra meno ↑" : "Vedi Tutti →"}
+          </button>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -298,7 +321,7 @@ export default function ImportDati() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
-                  {RECENT.map((r, i) => (
+                  {(showAll ? RECENT : RECENT.slice(0, 3)).map((r, i) => (
                     <tr key={i} className="hover:bg-muted/20 transition-colors">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2.5">
@@ -315,9 +338,29 @@ export default function ImportDati() {
                         </Badge>
                       </td>
                       <td className="px-5 py-3.5">
-                        <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
+                        <div className="relative">
+                          <button
+                            onClick={() => setOpenMenu(openMenu === i ? null : i)}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground">
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          {openMenu === i && (
+                            <div className="absolute right-0 top-8 z-20 bg-card border border-border rounded-xl shadow-md py-1 w-40" onClick={() => setOpenMenu(null)}>
+                              <button onClick={() => toast({ title: "Download avviato", description: r.file })}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-[13px] hover:bg-muted transition-colors">
+                                <Download className="w-3.5 h-3.5" style={{ color: C.blue }} /> Scarica
+                              </button>
+                              <button onClick={() => toast({ title: "Rielaborazione avviata", description: `${r.records.toLocaleString("it-IT")} record in coda.` })}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-[13px] hover:bg-muted transition-colors">
+                                <RefreshCw className="w-3.5 h-3.5" style={{ color: C.amber }} /> Rielabora
+                              </button>
+                              <button onClick={() => toast({ title: "File eliminato", description: r.file, variant: "destructive" })}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-[13px] hover:bg-muted transition-colors text-red-500">
+                                <Trash2 className="w-3.5 h-3.5" /> Elimina
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

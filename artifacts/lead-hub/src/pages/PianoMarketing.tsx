@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
-const C = { blue: "#E8006A", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316", cyan: "#0EA5E9" };
+const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316", cyan: "#0EA5E9" };
 
 /* ── Sidebar sections ── */
 const SECTIONS = [
@@ -41,7 +42,9 @@ function SectionTitle({ emoji, title, id }: { emoji: string; title: string; id: 
 
 export default function PianoMarketing() {
   const [active, setActive] = useState("riepilogo");
+  const [editMode, setEditMode] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const scrollTo = (id: string) => {
     setActive(id);
@@ -79,12 +82,22 @@ export default function PianoMarketing() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors">
+            <button
+              onClick={() => {
+                toast({ title: "Esportazione avviata", description: "Preparazione del PDF in corso…" });
+                setTimeout(() => window.print(), 400);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors">
               <Download className="w-4 h-4" /> Esporta PDF
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
-              style={{ backgroundColor: C.blue }}>
-              <Pencil className="w-4 h-4" /> Modifica
+            <button
+              onClick={() => {
+                setEditMode(v => !v);
+                toast({ title: editMode ? "Modalità lettura attivata" : "Modalità modifica attivata", description: editMode ? "Il piano è di sola lettura." : "Puoi ora modificare il piano." });
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
+              style={{ backgroundColor: editMode ? C.green : C.blue }}>
+              <Pencil className="w-4 h-4" /> {editMode ? "Salva Modifiche" : "Modifica"}
             </button>
           </div>
         </div>
