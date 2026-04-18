@@ -16,8 +16,9 @@ import {
   Download, Printer, BarChart3, TrendingUp, DollarSign,
   Target, Users, Zap, Brain, Map, RefreshCw,
   CheckCircle2, AlertTriangle, ArrowUpRight, FileSpreadsheet,
-  MessageSquare, Sparkles,
+  MessageSquare, Sparkles, Mail,
 } from "lucide-react";
+import { ShareEmailModal } from "@/components/ShareEmailModal";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316", cyan: "#06B6D4" };
 const GRAD = "linear-gradient(135deg, #7C3AED 0%, #2563EB 55%, #F97316 100%)";
@@ -78,6 +79,7 @@ function exportReportXlsx(kpis: any, roiData: any[], trendData: any[]) {
 
 export default function Reporting() {
   const [section, setSection] = useState<string>("all");
+  const [showShare, setShowShare] = useState(false);
 
   const assessmentRaw = localStorage.getItem(ASSESSMENT_KEY);
   const assessment = assessmentRaw ? JSON.parse(assessmentRaw) : null;
@@ -146,6 +148,11 @@ export default function Reporting() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
               style={{ background: GRAD }}>
               <Download className="w-4 h-4" /> Esporta PDF
+            </button>
+            <button onClick={() => setShowShare(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-85"
+              style={{ background: "linear-gradient(135deg,#2563EB,#7C3AED)" }}>
+              <Mail className="w-4 h-4" /> Condividi
             </button>
           </div>
         </div>
@@ -487,6 +494,17 @@ export default function Reporting() {
           </div>
         </div>
       </div>
+
+      <ShareEmailModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        title="Reporting Consolidato"
+        filename="LeadHub_Report"
+        formats={[
+          { type: "xlsx", label: "Excel",      onExport: () => exportReportXlsx(kpis, roiData, trendData) },
+          { type: "pdf",  label: "PDF / Stampa", onExport: () => window.print() },
+        ]}
+      />
     </div>
   );
 }

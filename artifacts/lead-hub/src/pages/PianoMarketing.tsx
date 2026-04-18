@@ -8,8 +8,9 @@ import {
   Download, Pencil, ChevronRight, Check, X, AlertTriangle,
   Eye, Target, Globe, Zap, TrendingUp, Users, BarChart2,
   Calendar, DollarSign, Map, Award, Briefcase, Settings,
-  FileSpreadsheet, FileText,
+  FileSpreadsheet, FileText, Mail,
 } from "lucide-react";
+import { ShareEmailModal } from "@/components/ShareEmailModal";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316", cyan: "#0EA5E9" };
@@ -133,6 +134,7 @@ function SectionTitle({ title, id }: { emoji?: string; title: string; id: string
 export default function PianoMarketing() {
   const [active, setActive] = useState("riepilogo");
   const [editMode, setEditMode] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -191,6 +193,12 @@ export default function PianoMarketing() {
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors">
               <Download className="w-4 h-4" /> PDF
+            </button>
+            <button
+              onClick={() => setShowShare(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-all hover:opacity-85"
+              style={{ background: "linear-gradient(135deg,#2563EB,#7C3AED)", color: "#fff", border: "none" }}>
+              <Mail className="w-4 h-4" /> Condividi
             </button>
             <button
               onClick={() => {
@@ -658,6 +666,18 @@ export default function PianoMarketing() {
           </main>
         </div>
       </div>
+
+      <ShareEmailModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        title="Piano Marketing Strategico 2026"
+        filename="PianoMarketing_2026"
+        formats={[
+          { type: "xlsx", label: "Excel",  onExport: () => { exportPianoExcel(); toast({ title: "Export Excel avviato", description: "File PianoMarketing.xlsx scaricato." }); } },
+          { type: "docx", label: "Word",   onExport: () => { exportPianoWord();  toast({ title: "Export Word avviato",  description: "File PianoMarketing.doc scaricato."  }); } },
+          { type: "pdf",  label: "PDF",    onExport: () => { toast({ title: "Esportazione PDF avviata", description: "Preparazione del PDF in corso…" }); setTimeout(() => window.print(), 400); } },
+        ]}
+      />
     </div>
   );
 }
