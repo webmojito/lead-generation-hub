@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Calculator, TrendingUp, Target, Zap, BarChart2,
   Save, Info, ArrowUp, ArrowDown, DollarSign, Users,
+  Megaphone, Mail, Video, FileText, Linkedin, Search,
 } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
@@ -13,12 +14,12 @@ function fmt$(v: number) { return new Intl.NumberFormat("it-IT", { style: "curre
 function fmtN(v: number) { return v.toLocaleString("it-IT"); }
 
 const CANALI = [
-  { id: "paid",    label: "Paid Ads",  icon: "AD",  cpl: 48, convRate: 0.22 },
-  { id: "email",   label: "Email",     icon: "EM",  cpl: 12, convRate: 0.18 },
-  { id: "webinar", label: "Webinar",   icon: "WB",  cpl: 28, convRate: 0.31 },
-  { id: "content", label: "Content",   icon: "CT",  cpl: 22, convRate: 0.20 },
-  { id: "social",  label: "LinkedIn",  icon: "LI",  cpl: 55, convRate: 0.28 },
-  { id: "seo",     label: "SEO",       icon: "SE",  cpl: 15, convRate: 0.24 },
+  { id: "paid",    label: "Paid Ads",  icon: Megaphone, cpl: 48, convRate: 0.22 },
+  { id: "email",   label: "Email",     icon: Mail,      cpl: 12, convRate: 0.18 },
+  { id: "webinar", label: "Webinar",   icon: Video,     cpl: 28, convRate: 0.31 },
+  { id: "content", label: "Content",   icon: FileText,  cpl: 22, convRate: 0.20 },
+  { id: "social",  label: "LinkedIn",  icon: Linkedin,  cpl: 55, convRate: 0.28 },
+  { id: "seo",     label: "SEO",       icon: Search,    cpl: 15, convRate: 0.24 },
 ];
 
 const BENCHMARK = { cpc: "$4.20 – $6.50", mqlSql: "18.4%", closedWon: "14%" };
@@ -176,7 +177,7 @@ export default function RoiCalculator() {
                         style={canaleId === c.id
                           ? { backgroundColor: C.blue, color: "#fff", borderColor: C.blue }
                           : { backgroundColor: "transparent", borderColor: "rgba(255,255,255,0.1)", color: "var(--muted-foreground)" }}>
-                        <span>{c.icon}</span> {c.label}
+                        <c.icon className="w-4 h-4 shrink-0" /> {c.label}
                       </button>
                     ))}
                   </div>

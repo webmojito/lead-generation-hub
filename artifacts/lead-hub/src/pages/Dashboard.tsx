@@ -314,7 +314,7 @@ export default function Dashboard() {
     const active = selectedKpi === id;
     return (
       <Card
-        className={`cursor-pointer transition-all duration-200 ${active ? "ring-2" : "hover:scale-[1.01]"}`}
+        className={`cursor-pointer transition-all duration-200 card-hover ${active ? "ring-2 ig-border" : "ig-border"}`}
         style={active ? { "--tw-ring-color": C.blue } as any : {}}
         onClick={() => setSelectedKpi(active ? null : id)}
       >
@@ -359,7 +359,7 @@ export default function Dashboard() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="font-extrabold text-[30px] tracking-tight leading-none">
-                Lead Intelligence Hub
+                Lead Generation Hub
               </h1>
               <p className="text-muted-foreground mt-1.5 text-[14px]">
                 Segnali di domanda in tempo reale e tracciamento della velocità del funnel.
@@ -491,7 +491,7 @@ export default function Dashboard() {
           {/* ── Charts row ── */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* Funnel velocity — 3/5 */}
-            <Card className="lg:col-span-3 flex flex-col">
+            <Card className="lg:col-span-3 flex flex-col card-hover">
               <CardHeader className="px-5 pt-5 pb-2 flex-row items-start justify-between space-y-0">
                 <div>
                   <CardTitle className="text-base font-bold">Velocità del Funnel</CardTitle>
@@ -524,7 +524,7 @@ export default function Dashboard() {
             </Card>
 
             {/* Performance vs Obiettivi — 2/5 */}
-            <Card className="lg:col-span-2 flex flex-col">
+            <Card className="lg:col-span-2 flex flex-col card-hover">
               <CardHeader className="px-5 pt-5 pb-2 flex-row items-start justify-between space-y-0">
                 <div>
                   <CardTitle className="text-base font-bold">Performance vs Obiettivi</CardTitle>
@@ -583,7 +583,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Tabella canali ── */}
-          <Card>
+          <Card className="card-hover">
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
               <div>
                 <CardTitle className="text-base font-bold">Analisi Canali di Acquisizione</CardTitle>

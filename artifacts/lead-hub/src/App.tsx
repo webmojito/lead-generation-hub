@@ -26,20 +26,25 @@ const GRAD_ORANGE_PURPLE = "linear-gradient(135deg, #F97316 0%, #7C3AED 100%)";
 
 function CoraJEMark({ size = 32 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
       <defs>
-        <linearGradient id="cjLogo" x1="2" y1="30" x2="30" y2="2" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#F97316" />
-          <stop offset="45%" stopColor="#7C3AED" />
-          <stop offset="100%" stopColor="#3B82F6" />
+        <linearGradient id="igLogo" x1="3" y1="33" x2="30" y2="3" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#405DE6" />
+          <stop offset="22%"  stopColor="#833AB4" />
+          <stop offset="50%"  stopColor="#C13584" />
+          <stop offset="75%"  stopColor="#F77737" />
+          <stop offset="100%" stopColor="#FCAF45" />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx="8" fill="url(#cjLogo)" opacity="0.18" />
-      <path d="M23 16H10C10 11.6 12.7 8 16.5 8C20.3 8 23 11.6 23 16Z"
-        stroke="url(#cjLogo)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M10 16C10 20.4 12.7 23 16.5 23C19.2 23 21.5 21.5 22.5 19"
-        stroke="url(#cjLogo)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      <path d="M20.5 6L25 10.5" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
+      <rect width="36" height="36" rx="9" fill="url(#igLogo)" opacity="0.14" />
+      <path d="M24 17H9C9 11.4 12.5 7 17.5 7C22.5 7 26 11.4 26 17"
+        stroke="url(#igLogo)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+      <path d="M9 17H24"
+        stroke="url(#igLogo)" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M9 17C9 22.6 12.5 26 17.5 26C21 26 23.8 23.8 25 20.5"
+        stroke="url(#igLogo)" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+      <path d="M22 10L28 3" stroke="url(#igLogo)" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M24 3L28 3L28 7" stroke="url(#igLogo)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }

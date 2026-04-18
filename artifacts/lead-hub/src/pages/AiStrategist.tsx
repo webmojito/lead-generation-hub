@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   Send, RefreshCw, AlertTriangle, CheckCircle2, Sparkles,
   TrendingDown, TrendingUp, Globe, BookOpen, Clock, Tag, Filter,
+  Mail, Megaphone, Linkedin, Bot, Shield, Target, Video,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
 
@@ -14,14 +16,14 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 interface ChatMessage { role: "user" | "assistant"; content: string; ts: Date; }
 
 /* ─── problemi e opportunità statici ─── */
-const PROBLEMI = [
-  { icon: "EM", color: "#F97316", title: "Email Fatigue nella Campagna B", desc: "I tassi di apertura sono scesi del 18% negli ultimi 7 giorni a causa di un'eccessiva frequenza." },
-  { icon: "AD", color: "#DC2626", title: "Calo Lead ADV vs Benchmark",     desc: "Il CPC di Google Ads è aumentato del 22% mentre il CVR è rimasto stazionario." },
+const PROBLEMI: { icon: LucideIcon; color: string; title: string; desc: string }[] = [
+  { icon: Mail,      color: "#F97316", title: "Email Fatigue nella Campagna B", desc: "I tassi di apertura sono scesi del 18% negli ultimi 7 giorni a causa di un'eccessiva frequenza." },
+  { icon: Megaphone, color: "#DC2626", title: "Calo Lead ADV vs Benchmark",     desc: "Il CPC di Google Ads è aumentato del 22% mentre il CVR è rimasto stazionario." },
 ];
 
-const CORREZIONI = [
-  { icon: "EM", color: "#16A34A", title: "Riduci la frequenza email del 20%",   desc: "Implementazione di un cooldown di 48 ore tra le sequenze per recuperare l'engagement." },
-  { icon: "LI", color: "#2563EB", title: "Riapplica il budget su LinkedIn",      desc: "Sposta 4K/mese da Google Search a LinkedIn ABM; target ROAS 4.2x." },
+const CORREZIONI: { icon: LucideIcon; color: string; title: string; desc: string }[] = [
+  { icon: Mail,     color: "#16A34A", title: "Riduci la frequenza email del 20%",   desc: "Implementazione di un cooldown di 48 ore tra le sequenze per recuperare l'engagement." },
+  { icon: Linkedin, color: "#2563EB", title: "Riapplica il budget su LinkedIn",      desc: "Sposta 4K/mese da Google Search a LinkedIn ABM; target ROAS 4.2x." },
 ];
 
 const SUGGERIMENTI_RAPIDI = [
@@ -34,13 +36,13 @@ const SUGGERIMENTI_RAPIDI = [
 
 /* ─── trend globali mock ─── */
 const TREND_CATEGORIES = ["Tutti", "Lead Gen", "Automazione", "Paid Ads", "Trend"] as const;
-const TREND_ARTICLES = [
-  { cat: "Automazione",  flag: "IN TREND",  img: "AI", imgColor: "#7C3AED", title: "Come l'AI sta rivoluzionando il B2B Cold Outreach nel 2024",   desc: "Un nuovo studio mostra che gli agenti AI personalizzati stanno superando gli SDR umani del 34% nei tassi di...", mins: 6,  type: "Strategico"  },
-  { cat: "Lead Gen",     flag: "NUOVO",     img: "PV", imgColor: "#F97316", title: "La morte dei cookie di terze parti: cosa devono sapere i marketer", desc: "Le strategie di raccolta dati di prima parte non sono più opzionali. Scopri i migliori framework per la retent...", mins: 9,  type: "Psicologia"  },
-  { cat: "Paid Ads",     flag: "",          img: "LI", imgColor: "#2563EB", title: "LinkedIn Thought Leadership Ads: guida completa 2025",          desc: "Come sfruttare al massimo i nuovi formati di annuncio per il target decision maker nel B2B SaaS...",           mins: 7,  type: "Strategico"  },
-  { cat: "Trend",        flag: "IN TREND",  img: "AB", imgColor: "#16A34A", title: "Account-Based Marketing: Misurare il ROI in modo definitivo",   desc: "Finalmente un framework comprovato per misurare il reale impatto dell'ABM sul fatturato aziendale...",          mins: 5,  type: "Analitico"   },
-  { cat: "Automazione",  flag: "",          img: "AU", imgColor: "#7C3AED", title: "Marketing Automation: i 10 workflow che fanno la differenza",   desc: "Dal lead scoring all'onboarding: i processi che le aziende top usano per ridurre il tempo di conversione...",    mins: 8,  type: "Pratico"     },
-  { cat: "Lead Gen",     flag: "NUOVO",     img: "WB", imgColor: "#F97316", title: "Webinar come motore di lead gen: case study +300% MQL",         desc: "Come un'azienda SaaS ha trasformato i webinar nella loro principale fonte di lead qualificati in 6 mesi...",    mins: 4,  type: "Case Study"  },
+const TREND_ARTICLES: { cat: string; flag: string; icon: LucideIcon; imgColor: string; title: string; desc: string; mins: number; type: string }[] = [
+  { cat: "Automazione",  flag: "IN TREND",  icon: Bot,       imgColor: "#7C3AED", title: "Come l'AI sta rivoluzionando il B2B Cold Outreach nel 2024",   desc: "Un nuovo studio mostra che gli agenti AI personalizzati stanno superando gli SDR umani del 34% nei tassi di...", mins: 6,  type: "Strategico"  },
+  { cat: "Lead Gen",     flag: "NUOVO",     icon: Shield,    imgColor: "#F97316", title: "La morte dei cookie di terze parti: cosa devono sapere i marketer", desc: "Le strategie di raccolta dati di prima parte non sono più opzionali. Scopri i migliori framework per la retent...", mins: 9,  type: "Psicologia"  },
+  { cat: "Paid Ads",     flag: "",          icon: Linkedin,  imgColor: "#2563EB", title: "LinkedIn Thought Leadership Ads: guida completa 2025",          desc: "Come sfruttare al massimo i nuovi formati di annuncio per il target decision maker nel B2B SaaS...",           mins: 7,  type: "Strategico"  },
+  { cat: "Trend",        flag: "IN TREND",  icon: Target,    imgColor: "#16A34A", title: "Account-Based Marketing: Misurare il ROI in modo definitivo",   desc: "Finalmente un framework comprovato per misurare il reale impatto dell'ABM sul fatturato aziendale...",          mins: 5,  type: "Analitico"   },
+  { cat: "Automazione",  flag: "",          icon: RefreshCw, imgColor: "#7C3AED", title: "Marketing Automation: i 10 workflow che fanno la differenza",   desc: "Dal lead scoring all'onboarding: i processi che le aziende top usano per ridurre il tempo di conversione...",    mins: 8,  type: "Pratico"     },
+  { cat: "Lead Gen",     flag: "NUOVO",     icon: Video,     imgColor: "#F97316", title: "Webinar come motore di lead gen: case study +300% MQL",         desc: "Come un'azienda SaaS ha trasformato i webinar nella loro principale fonte di lead qualificati in 6 mesi...",    mins: 4,  type: "Case Study"  },
 ];
 
 const SELEZIONATI = [
@@ -167,8 +169,10 @@ export default function AiStrategist() {
               {PROBLEMI.map((p, i) => (
                 <div key={i} className="rounded-xl p-3.5 border" style={{ backgroundColor: `${C.red}08`, borderColor: `${C.red}25` }}>
                   <div className="flex items-center gap-2 font-semibold text-sm mb-1">
-                    <span className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black text-white shrink-0"
-                      style={{ backgroundColor: p.color }}>{p.icon}</span>
+                    <span className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: p.color }}>
+                      <p.icon className="w-3.5 h-3.5 text-white" />
+                    </span>
                     {p.title}
                   </div>
                   <p className="text-[12px] text-muted-foreground">{p.desc}</p>
@@ -186,8 +190,10 @@ export default function AiStrategist() {
               {CORREZIONI.map((c, i) => (
                 <div key={i} className="rounded-xl p-3.5 border" style={{ backgroundColor: `${C.green}08`, borderColor: `${C.green}25` }}>
                   <div className="flex items-center gap-2 font-semibold text-sm mb-1">
-                    <span className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black text-white shrink-0"
-                      style={{ backgroundColor: c.color }}>{c.icon}</span>
+                    <span className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: c.color }}>
+                      <c.icon className="w-3.5 h-3.5 text-white" />
+                    </span>
                     {c.title}
                   </div>
                   <p className="text-[12px] text-muted-foreground">{c.desc}</p>
@@ -335,9 +341,9 @@ export default function AiStrategist() {
                   <div key={i} className="rounded-xl border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group overflow-hidden">
                     <div className="h-24 flex items-center justify-center rounded-t-xl"
                       style={{ background: `linear-gradient(135deg, ${a.imgColor}22, ${a.imgColor}08)` }}>
-                      <span className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black text-white"
+                      <span className="w-12 h-12 rounded-xl flex items-center justify-center"
                         style={{ background: `linear-gradient(135deg, ${a.imgColor}cc, ${a.imgColor}88)` }}>
-                        {a.img}
+                        <a.icon className="w-6 h-6 text-white" />
                       </span>
                     </div>
                     <div className="p-3">
