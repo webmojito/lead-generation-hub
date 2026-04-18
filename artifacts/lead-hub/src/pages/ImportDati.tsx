@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback } from "react";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   Upload, Clipboard, AlertTriangle, CheckCircle2, XCircle,
   ChevronDown, MoreVertical, FileSpreadsheet, Loader2, Trash2,
-  Download, RefreshCw, Eye,
+  Download, RefreshCw, Eye, Table2,
 } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316" };
@@ -41,23 +43,94 @@ function StatusPill({ status }: { status: FieldRow["status"] }) {
 }
 
 export default function ImportDati() {
-  const [isDragging, setDragging]     = useState(false);
-  const [file, setFile]               = useState<File | null>(null);
-  const [mapping, setMapping]         = useState<FieldRow[]>(MOCK_MAPPING);
-  const [isImporting, setImporting]   = useState(false);
-  const [importDone, setImportDone]   = useState(false);
-  const [importProgress, setProgress] = useState(0);
-  const [showAll, setShowAll]         = useState(false);
-  const [openMenu, setOpenMenu]       = useState<number | null>(null);
-  const fileRef                       = useRef<HTMLInputElement>(null);
-  const { toast }                     = useToast();
+  const [isDragging, setDragging]       = useState(false);
+  const [file, setFile]                 = useState<File | null>(null);
+  const [mapping, setMapping]           = useState<FieldRow[]>(MOCK_MAPPING);
+  const [isImporting, setImporting]     = useState(false);
+  const [importDone, setImportDone]     = useState(false);
+  const [importProgress, setProgress]   = useState(0);
+  const [showAll, setShowAll]           = useState(false);
+  const [openMenu, setOpenMenu]         = useState<number | null>(null);
+  const [previewRows, setPreviewRows]   = useState<Record<string, any>[]>([]);
+  const [parsedColumns, setParsedColumns] = useState<string[]>([]);
+  const [totalRec, setTotalRec]         = useState<number | null>(null);
+  const [showPreview, setShowPreview]   = useState(false);
+  const fileRef                         = useRef<HTMLInputElement>(null);
+  const { toast }                       = useToast();
+
+  const parseFile = useCallback((f: File) => {
+    const ext = f.name.split(".").pop()?.toLowerCase();
+    if (ext === "csv") {
+      Papa.parse(f, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          const cols = result.meta.fields ?? [];
+          const rows = result.data as Record<string, any>[];
+          setParsedColumns(cols);
+          setPreviewRows(rows.slice(0, 5));
+          setTotalRec(rows.length);
+          setMapping(cols.slice(0, 8).map(col => {
+            const lc = col.toLowerCase();
+            let target = "Seleziona campo";
+            if (lc.includes("first") || lc === "nome" || lc === "name")      target = "Nome";
+            else if (lc.includes("last") || lc === "cognome")                target = "Cognome";
+            else if (lc.includes("email") || lc.includes("mail"))            target = "Email";
+            else if (lc.includes("phone") || lc.includes("tel"))             target = "Telefono";
+            else if (lc.includes("company") || lc.includes("aziend"))        target = "Azienda";
+            else if (lc.includes("sector") || lc.includes("settore"))        target = "Settore";
+            else if (lc.includes("role") || lc.includes("ruolo") || lc.includes("jobtitle") || lc.includes("job_title")) target = "Ruolo";
+            else if (lc.includes("budget"))                                  target = "Budget";
+            else if (lc.includes("source") || lc.includes("fonte"))         target = "Fonte Lead";
+            return { source: col, target, status: target === "Seleziona campo" ? "missing" : "valid" };
+          }));
+        },
+        error: () => toast({ title: "Errore parsing CSV", variant: "destructive" }),
+      });
+    } else if (ext === "xlsx" || ext === "xls") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const wb = XLSX.read(e.target?.result as ArrayBuffer, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const data = XLSX.utils.sheet_to_json<Record<string, any>>(ws, { defval: "" });
+          const cols = data.length > 0 ? Object.keys(data[0]) : [];
+          setParsedColumns(cols);
+          setPreviewRows(data.slice(0, 5));
+          setTotalRec(data.length);
+          setMapping(cols.slice(0, 8).map(col => {
+            const lc = col.toLowerCase().replace(/[^a-z]/g, "");
+            let target = "Seleziona campo";
+            if (lc.includes("first") || lc === "nome" || lc === "name")      target = "Nome";
+            else if (lc.includes("last") || lc === "cognome")                target = "Cognome";
+            else if (lc.includes("email") || lc.includes("mail"))            target = "Email";
+            else if (lc.includes("phone") || lc.includes("tel"))             target = "Telefono";
+            else if (lc.includes("company") || lc.includes("aziend"))        target = "Azienda";
+            else if (lc.includes("sector") || lc.includes("settore"))        target = "Settore";
+            else if (lc.includes("role") || lc.includes("ruolo") || lc.includes("jobtitle")) target = "Ruolo";
+            else if (lc.includes("budget"))                                  target = "Budget";
+            else if (lc.includes("source") || lc.includes("fonte"))         target = "Fonte Lead";
+            return { source: col, target, status: target === "Seleziona campo" ? "missing" : "valid" };
+          }));
+        } catch { toast({ title: "Errore parsing Excel", variant: "destructive" }); }
+      };
+      reader.readAsArrayBuffer(f);
+    } else {
+      toast({ title: "Formato non supportato", description: "Carica un file .csv, .xlsx o .xls", variant: "destructive" });
+    }
+  }, [toast]);
 
   const handleFiles = useCallback((files: FileList | null) => {
     if (!files || files.length === 0) return;
-    setFile(files[0]);
+    const f = files[0];
+    setFile(f);
     setImportDone(false);
     setProgress(0);
-  }, []);
+    setParsedColumns([]);
+    setPreviewRows([]);
+    setTotalRec(null);
+    parseFile(f);
+  }, [parseFile]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -81,10 +154,10 @@ export default function ImportDati() {
     }, 180);
   };
 
-  const totalRecords   = 1240;
-  const criticalErrors = 18;
-  const duplicates     = 12;
-  const readyPct       = Math.round(((totalRecords - criticalErrors - duplicates) / totalRecords) * 100);
+  const totalRecords   = totalRec ?? 1240;
+  const criticalErrors = file ? Math.round(totalRecords * 0.014) : 18;
+  const duplicates     = file ? Math.round(totalRecords * 0.01) : 12;
+  const readyPct       = Math.round(((totalRecords - criticalErrors - duplicates) / Math.max(totalRecords, 1)) * 100);
 
   return (
     <div className="min-h-screen bg-background text-foreground px-5 py-6">
@@ -282,7 +355,7 @@ export default function ImportDati() {
                   style={{ backgroundColor: C.blue }}>
                   {isImporting
                     ? <><Loader2 className="w-4 h-4 animate-spin" /> Importazione in corso…</>
-                    : "🚀 Avvia Import"}
+                    : "Avvia Import"}
                 </button>
               ) : (
                 <div className="rounded-xl p-3.5 flex items-center gap-3 border" style={{ backgroundColor: `${C.green}10`, borderColor: `${C.green}30` }}>
@@ -298,6 +371,53 @@ export default function ImportDati() {
             </CardContent>
           </Card>
         </div>
+
+        {/* ── Anteprima Dati ── */}
+        {previewRows.length > 0 && (
+          <Card>
+            <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Table2 className="w-4 h-4" style={{ color: C.blue }} /> Anteprima Dati
+                </CardTitle>
+                <CardDescription className="text-xs mt-0.5">
+                  Prime {previewRows.length} righe su {totalRecords.toLocaleString("it-IT")} totali rilevate
+                </CardDescription>
+              </div>
+              <button onClick={() => setShowPreview(v => !v)} className="text-xs font-semibold" style={{ color: C.blue }}>
+                {showPreview ? "Nascondi ↑" : "Mostra ↓"}
+              </button>
+            </CardHeader>
+            {showPreview && (
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b border-border" style={{ backgroundColor: "rgba(0,0,0,0.02)" }}>
+                        {parsedColumns.slice(0, 7).map(col => (
+                          <th key={col} className="text-left px-4 py-2.5 font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{col}</th>
+                        ))}
+                        {parsedColumns.length > 7 && <th className="px-4 py-2.5 text-muted-foreground">+{parsedColumns.length - 7} col</th>}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50">
+                      {previewRows.map((row, i) => (
+                        <tr key={i} className="hover:bg-muted/20">
+                          {parsedColumns.slice(0, 7).map(col => (
+                            <td key={col} className="px-4 py-2.5 text-muted-foreground font-mono whitespace-nowrap max-w-[150px] truncate">
+                              {String(row[col] ?? "")}
+                            </td>
+                          ))}
+                          {parsedColumns.length > 7 && <td className="px-4 py-2.5 text-muted-foreground">…</td>}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        )}
 
         {/* ── Attività Recente ── */}
         <Card>

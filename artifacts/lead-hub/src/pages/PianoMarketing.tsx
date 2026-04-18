@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import * as XLSX from "xlsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -7,6 +8,7 @@ import {
   Download, Pencil, ChevronRight, Check, X, AlertTriangle,
   Eye, Target, Globe, Zap, TrendingUp, Users, BarChart2,
   Calendar, DollarSign, Map, Award, Briefcase, Settings,
+  FileSpreadsheet, FileText,
 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -31,6 +33,93 @@ const BUDGET_PIE = [
   { name: "Events & ABM",     value: 20, color: C.amber },
   { name: "Tools & Ops",      value: 10, color: C.cyan },
 ];
+
+function exportPianoExcel() {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+    { Sezione: "Visione", Contenuto: "Diventare il leader indiscusso nelle soluzioni SaaS per la gestione dei flussi di lavoro Enterprise entro il Q4 2025." },
+    { Sezione: "Obiettivi Business", Contenuto: "+65% crescita ARR, Churn Rate < 3%, Top 3 Quadrante Magico" },
+    { Sezione: "Mercato", Contenuto: "Opportunità EMEA stimata: 150M€" },
+    { Sezione: "Budget Totale", Contenuto: "1.2M€ allocati per il 2024, ROI atteso 4.2x entro 18 mesi" },
+    { Sezione: "Priorità", Contenuto: "Lead Gen alta qualità, ABM, ottimizzazione funnel" },
+    { Sezione: "Impatto Atteso", Contenuto: "+25% quota di mercato, posizionamento Top 3" },
+  ]), "Riepilogo Esecutivo");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+    { Canale: "Paid Ads", Badge: "B2B · Paid", Obiettivo: "Lead qualificati C-Level", Budget: "45K€/mese", CPCTarget: "2.50€", Azioni: "LinkedIn Document Ads, A/B test, Ottimizzazione funnel" },
+    { Canale: "Content & SEO", Badge: "B2B · Content", Obiettivo: "Autorità mercato SaaS Enterprise", Budget: "20K€/mese", Download: "5K/mese", Azioni: "Case studies, SEO keyword intent, Video tutorial" },
+    { Canale: "Account-Based Marketing", Badge: "B2B · ABM", Obiettivo: "Chiudere top 50 account", Budget: "35K€/mese", SQLTarget: "10/account", Azioni: "Outreach personalizzato, Intent data, Sequenze multi-canale" },
+  ]), "Strategie di Canale");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+    { Fase: "Gen-Feb", Label: "Setup & Foundation", Azioni: "CRM migration, SEO audit, LinkedIn setup" },
+    { Fase: "Mar-Apr", Label: "Launch & Test", Azioni: "Campagne Paid, Newsletter, Webinar series" },
+    { Fase: "Mag", Label: "Scale", Azioni: "ABM expansion, Partner program, Content hub" },
+    { Fase: "Giu", Label: "Review & Optimize", Azioni: "H1 retrospective, Budget realloc, H2 planning" },
+    { Fase: "Lug-Set", Label: "H2 Growth", Azioni: "Espansione EMEA, Thought leadership, Enterprise deals" },
+    { Fase: "Ott-Dic", Label: "Year-End Push", Azioni: "Upsell/cross-sell, Rinnovi, Q4 objectives review" },
+  ]), "Roadmap");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([
+    { Voce: "Paid Acquisition", Percentuale: "40%", Importo: "480.000€" },
+    { Voce: "Content & SEO", Percentuale: "30%", Importo: "360.000€" },
+    { Voce: "Events & ABM", Percentuale: "20%", Importo: "240.000€" },
+    { Voce: "Tools & Ops", Percentuale: "10%", Importo: "120.000€" },
+    { Voce: "TOTALE", Percentuale: "100%", Importo: "1.200.000€" },
+  ]), "Budget");
+  XLSX.writeFile(wb, `PianoMarketing_${new Date().getFullYear()}.xlsx`);
+}
+
+function exportPianoWord() {
+  const html = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+    <head><meta charset='utf-8'><title>Piano Marketing 2024</title>
+    <style>
+      body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 2cm; }
+      h1 { font-size: 18pt; color: #7C3AED; }
+      h2 { font-size: 14pt; color: #2563EB; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 20px; }
+      h3 { font-size: 12pt; color: #333; }
+      table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+      th { background: #7C3AED; color: white; padding: 6px 10px; text-align: left; font-size: 10pt; }
+      td { border: 1px solid #ddd; padding: 6px 10px; font-size: 10pt; }
+      .badge { background: #7C3AED22; color: #7C3AED; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: bold; }
+      .kpi { font-size: 14pt; font-weight: bold; color: #C13584; }
+    </style></head><body>
+    <h1>Piano Marketing Strategico 2024</h1>
+    <p>Documentazione esecutiva per l'espansione nel mercato SaaS Enterprise.</p>
+    <h2>Riepilogo Esecutivo</h2>
+    <table><tr><th>Area</th><th>Dettaglio</th></tr>
+    <tr><td>Visione</td><td>Leader indiscusso SaaS Enterprise entro Q4 2025</td></tr>
+    <tr><td>Obiettivi Business</td><td>+65% ARR, Churn &lt;3%, Top 3 Quadrante Magico</td></tr>
+    <tr><td>Budget Totale</td><td class='kpi'>1.200.000€</td></tr>
+    <tr><td>ROI Atteso</td><td>4.2x entro 18 mesi</td></tr>
+    <tr><td>Mercato Target</td><td>EMEA — valore stimato 150M€</td></tr>
+    </table>
+    <h2>Analisi SWOT</h2>
+    <table><tr><th>Punti di Forza</th><th>Debolezze</th><th>Opportunità</th><th>Minacce</th></tr>
+    <tr><td>Product-led growth consolidato</td><td>Brand awareness limitata EMEA</td><td>Espansione mercato Enterprise</td><td>Competitor con budget maggiori</td></tr>
+    <tr><td>NPS elevato (72)</td><td>Ciclo di vendita lungo (45 gg)</td><td>AI integration demand +300%</td><td>Recessione economica potenziale</td></tr>
+    </table>
+    <h2>Strategie di Canale</h2>
+    <table><tr><th>Canale</th><th>Obiettivo</th><th>Budget/mese</th><th>KPI Target</th></tr>
+    <tr><td><span class='badge'>B2B · Paid</span> Paid Ads</td><td>Lead qualificati C-Level</td><td class='kpi'>45.000€</td><td>CPC 2.50€</td></tr>
+    <tr><td><span class='badge'>B2B · Content</span> Content & SEO</td><td>Autorità SaaS Enterprise</td><td class='kpi'>20.000€</td><td>5K download/mese</td></tr>
+    <tr><td><span class='badge'>B2B · ABM</span> Account-Based Marketing</td><td>Top 50 account target</td><td class='kpi'>35.000€</td><td>10 SQL/account</td></tr>
+    </table>
+    <h2>Roadmap H1-H2 2024</h2>
+    <table><tr><th>Fase</th><th>Label</th><th>Azioni Principali</th></tr>
+    <tr><td>Gen-Feb</td><td>Setup & Foundation</td><td>CRM migration, SEO audit, LinkedIn setup</td></tr>
+    <tr><td>Mar-Apr</td><td>Launch & Test</td><td>Campagne Paid live, Newsletter, Webinar series</td></tr>
+    <tr><td>Mag</td><td>Scale</td><td>ABM expansion, Partner program, Content hub</td></tr>
+    <tr><td>Giu</td><td>Review & Optimize</td><td>H1 retrospective, Budget realloc, H2 planning</td></tr>
+    </table>
+    <p style='color:#888;font-size:9pt;margin-top:30px;border-top:1px solid #eee;padding-top:10px;'>
+    Documento generato da Lead Hub - Growth Intelligence Platform · ${new Date().toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })}
+    </p>
+    </body></html>`;
+  const blob = new Blob(["\ufeff" + html], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `PianoMarketing_${new Date().getFullYear()}.doc`;
+  a.click(); URL.revokeObjectURL(url);
+}
 
 function SectionTitle({ title, id }: { emoji?: string; title: string; id: string }) {
   return (
@@ -82,14 +171,26 @@ export default function PianoMarketing() {
               Documentazione esecutiva per l'espansione nel mercato SaaS Enterprise.
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => { exportPianoExcel(); toast({ title: "Export Excel avviato", description: "File PianoMarketing.xlsx scaricato." }); }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors"
+              style={{ color: C.green }}>
+              <FileSpreadsheet className="w-4 h-4" /> Excel
+            </button>
+            <button
+              onClick={() => { exportPianoWord(); toast({ title: "Export Word avviato", description: "File PianoMarketing.doc scaricato." }); }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors"
+              style={{ color: C.blue }}>
+              <FileText className="w-4 h-4" /> Word
+            </button>
             <button
               onClick={() => {
-                toast({ title: "Esportazione avviata", description: "Preparazione del PDF in corso…" });
+                toast({ title: "Esportazione PDF avviata", description: "Preparazione del PDF in corso…" });
                 setTimeout(() => window.print(), 400);
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:bg-muted/50 transition-colors">
-              <Download className="w-4 h-4" /> Esporta PDF
+              <Download className="w-4 h-4" /> PDF
             </button>
             <button
               onClick={() => {
@@ -98,7 +199,7 @@ export default function PianoMarketing() {
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
               style={{ backgroundColor: editMode ? C.green : C.blue }}>
-              <Pencil className="w-4 h-4" /> {editMode ? "Salva Modifiche" : "Modifica"}
+              <Pencil className="w-4 h-4" /> {editMode ? "Salva" : "Modifica"}
             </button>
           </div>
         </div>

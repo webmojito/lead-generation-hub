@@ -84,10 +84,24 @@ export default function AiStrategist() {
   const [settore, setSettore]       = useState("SaaS B2B");
   const [paese, setPaese]           = useState("Italia");
   const bottomRef                   = useRef<HTMLDivElement>(null);
+  const chatRef                     = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const scrollToChat = () => {
+    chatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const askAbout = (text: string) => {
+    setInput(text);
+    scrollToChat();
+    setTimeout(() => {
+      const inputEl = chatRef.current?.querySelector("input");
+      inputEl?.focus();
+    }, 500);
+  };
 
   const sendMessage = async (text?: string) => {
     const msg = text ?? input.trim();
@@ -145,11 +159,14 @@ export default function AiStrategist() {
         </div>
 
         {/* Banner Analisi */}
-        <div className="rounded-2xl p-4 flex items-center gap-4 border" style={{ backgroundColor: `${C.blue}12`, borderColor: `${C.blue}30` }}>
+        <button
+          onClick={scrollToChat}
+          className="w-full rounded-2xl p-4 flex items-center gap-4 border text-left transition-all hover:scale-[1.005]"
+          style={{ backgroundColor: `${C.blue}12`, borderColor: `${C.blue}30` }}>
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.blue}25` }}>
             <Sparkles className="w-5 h-5" style={{ color: C.blue }} />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="font-bold text-sm" style={{ color: C.blue }}>Analisi Strategica Contestuale</p>
             <p className="text-[13px] text-muted-foreground mt-0.5">
               L'algoritmo sta analizzando{" "}
@@ -157,7 +174,10 @@ export default function AiStrategist() {
               per ottimizzare il tuo ROI. Elaborazione di 1.2 milioni di punti dati per il trimestre attuale.
             </p>
           </div>
-        </div>
+          <span className="text-[12px] font-bold shrink-0 flex items-center gap-1" style={{ color: C.blue }}>
+            Chiedi all'AI →
+          </span>
+        </button>
 
         {/* Problemi + Opportunità */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,16 +188,19 @@ export default function AiStrategist() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {PROBLEMI.map((p, i) => (
-                <div key={i} className="rounded-xl p-3.5 border" style={{ backgroundColor: `${C.red}08`, borderColor: `${C.red}25` }}>
+                <button key={i} onClick={() => askAbout(`Analizza questo problema e proponi una soluzione: ${p.title}. ${p.desc}`)}
+                  className="w-full rounded-xl p-3.5 border text-left transition-all hover:scale-[1.01] hover:shadow-md"
+                  style={{ backgroundColor: `${C.red}08`, borderColor: `${C.red}25` }}>
                   <div className="flex items-center gap-2 font-semibold text-sm mb-1">
                     <span className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
                       style={{ backgroundColor: p.color }}>
                       <p.icon className="w-3.5 h-3.5 text-white" />
                     </span>
                     {p.title}
+                    <span className="ml-auto text-[10px] font-normal" style={{ color: C.blue }}>Chiedi all'AI →</span>
                   </div>
                   <p className="text-[12px] text-muted-foreground">{p.desc}</p>
-                </div>
+                </button>
               ))}
             </CardContent>
           </Card>
@@ -205,7 +228,7 @@ export default function AiStrategist() {
         </div>
 
         {/* Chat AI */}
-        <Card>
+        <Card ref={chatRef as any}>
           <CardHeader className="px-5 py-3.5 border-b border-border flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -280,7 +303,7 @@ export default function AiStrategist() {
             <div className="px-5 pb-5">
               <div className="flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 focus-within:border-primary/60 transition-colors"
                 style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
-                <span className="text-muted-foreground text-lg">💬</span>
+                <Send className="w-4 h-4 text-muted-foreground" />
                 <input
                   value={input}
                   onChange={e => setInput(e.target.value)}

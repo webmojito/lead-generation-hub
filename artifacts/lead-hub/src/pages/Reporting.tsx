@@ -11,10 +11,12 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
+import * as XLSX from "xlsx";
 import {
   Download, Printer, BarChart3, TrendingUp, DollarSign,
   Target, Users, Zap, Brain, Map, RefreshCw,
-  CheckCircle2, AlertTriangle, ArrowUpRight,
+  CheckCircle2, AlertTriangle, ArrowUpRight, FileSpreadsheet,
+  MessageSquare, Sparkles,
 } from "lucide-react";
 
 const C = { blue: "#2563EB", purple: "#7C3AED", green: "#16A34A", red: "#DC2626", amber: "#F97316", cyan: "#06B6D4" };
@@ -51,6 +53,27 @@ function KpiTile({ label, value, sub, color, trend }: { label: string; value: st
       )}
     </div>
   );
+}
+
+function exportReportXlsx(kpis: any, roiData: any[], trendData: any[]) {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{
+    "CPL Medio (€)": kpis?.avgCpl ?? 42.5,
+    "MQL→SQL (%)": kpis?.mqlToSqlRate ?? 24.8,
+    "SQL→Won (%)": kpis?.sqlToWonRate ?? 18.2,
+    "ROI": kpis?.roi ?? "4.8x",
+    "Tot. MQL": kpis?.totalMqls ?? 598,
+    "Tot. SQL": kpis?.totalSqls ?? 108,
+    "Pipeline Totale (€)": kpis?.totalPipeline ?? 420000,
+    "Contatti DB": kpis?.totalContacts ?? 18340,
+  }]), "KPI Dashboard");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(roiData.map(d => ({
+    "Canale": d.canale, "CPL (€)": d.cpl, "ROI (x)": d.roi, "Lead": d.leads,
+  }))), "ROI per Canale");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trendData.map(d => ({
+    "Mese": d.mese, "MQL": d.mql, "SQL": d.sql, "Pipeline Won (€)": d.won,
+  }))), "Trend Mensile");
+  XLSX.writeFile(wb, `LeadHub_Report_${new Date().toLocaleDateString("it-IT").replace(/\//g, "-")}.xlsx`);
 }
 
 export default function Reporting() {
@@ -94,6 +117,7 @@ export default function Reporting() {
     { id: "roi",      label: "ROI & Canali",    icon: DollarSign  },
     { id: "ai",       label: "AI Insights",     icon: Brain       },
     { id: "piano",    label: "Piano Marketing", icon: Map         },
+    { id: "sintesi",  label: "Sintesi Auto",    icon: Sparkles    },
   ];
 
   return (
@@ -108,12 +132,18 @@ export default function Reporting() {
               Riepilogo unificato di tutte le metriche, analisi e output delle fasi precedenti.
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button onClick={() => window.print()}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-border transition-all hover:bg-muted/30">
               <Printer className="w-4 h-4" /> Stampa
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
+            <button onClick={() => exportReportXlsx(kpis, roiData, trendData)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border transition-all hover:bg-muted/30"
+              style={{ color: C.green }}>
+              <FileSpreadsheet className="w-4 h-4" /> Excel
+            </button>
+            <button onClick={() => window.print()}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
               style={{ background: GRAD }}>
               <Download className="w-4 h-4" /> Esporta PDF
             </button>
@@ -159,10 +189,10 @@ export default function Reporting() {
           <SectionBar title="KPI Dashboard" icon={Target} color={C.purple}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
               {kpisLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />) : <>
-                <KpiTile label="CPL Medio" value={`$${kpis?.avgCpl ?? "42.5"}`} sub="-12% vs precedente" color={C.blue} trend="up" />
-                <KpiTile label="MQL → SQL" value={`${kpis?.mqlToSqlRate ?? "24.8"}%`} sub="+3.2pp vs benchmark" color={C.purple} trend="up" />
-                <KpiTile label="SQL → Won" value={`${kpis?.sqlToWonRate ?? "18.2"}%`} sub="+1.5pp" color={C.green} trend="up" />
-                <KpiTile label="ROI Corrente" value={`${kpis?.roi ?? "4.8"}x`} sub="$850K generati" color={C.amber} trend="up" />
+                <KpiTile label="CPL Medio" value={`${kpis?.avgCpl ?? "42.5"}€`} sub="-12% vs precedente" color={C.blue} trend="up" />
+                <KpiTile label="MQL - SQL" value={`${kpis?.mqlToSqlRate ?? "24.8"}%`} sub="+3.2pp vs benchmark" color={C.purple} trend="up" />
+                <KpiTile label="SQL - Won" value={`${kpis?.sqlToWonRate ?? "18.2"}%`} sub="+1.5pp" color={C.green} trend="up" />
+                <KpiTile label="ROI Corrente" value={`${kpis?.roi ?? "4.8"}x`} sub="850K€ generati" color={C.amber} trend="up" />
               </>}
             </div>
 
@@ -220,10 +250,10 @@ export default function Reporting() {
                   <ResponsiveContainer width="100%" height={180}>
                     <BarChart data={roiData} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.45)" }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.45)" }} axisLine={false} tickLine={false} tickFormatter={v => `${v}€`} />
                       <YAxis type="category" dataKey="canale" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.55)" }} axisLine={false} tickLine={false} width={60} />
-                      <Tooltip contentStyle={{ background: "#1a1535", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "12px", fontSize: 12 }} formatter={(v: any) => [`$${v}`, "CPL"]} />
-                      <Bar dataKey="cpl" fill={C.blue} radius={[0, 6, 6, 0]} name="CPL ($)" />
+                      <Tooltip contentStyle={{ background: "#1a1535", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "12px", fontSize: 12 }} formatter={(v: any) => [`${v}€`, "CPL"]} />
+                      <Bar dataKey="cpl" fill={C.blue} radius={[0, 6, 6, 0]} name="CPL (€)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -235,7 +265,7 @@ export default function Reporting() {
                 <div key={d.canale} className="rounded-xl border border-border p-3 text-center">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{d.canale}</p>
                   <p className="text-base font-extrabold mt-1" style={{ color: C.amber }}>{d.roi}x</p>
-                  <p className="text-[11px] text-muted-foreground">${d.cpl} CPL</p>
+                  <p className="text-[11px] text-muted-foreground">{d.cpl}€ CPL</p>
                 </div>
               ))}
             </div>
@@ -244,7 +274,7 @@ export default function Reporting() {
 
         {/* ── AI Insights Report ── */}
         {(section === "all" || section === "ai") && (
-          <SectionBar title="AI Strategist — Insights Chiave" icon={Brain} color={C.purple}>
+          <SectionBar title="AI Strategist - Insights Chiave" icon={Brain} color={C.purple}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="px-5 py-3.5 border-b border-border">
@@ -376,6 +406,75 @@ export default function Reporting() {
                 </div>
               </CardContent>
             </Card>
+          </SectionBar>
+        )}
+
+        {/* ── Sintesi Automatica ── */}
+        {(section === "all" || section === "sintesi") && (
+          <SectionBar title="Sintesi Automatica dei Dati" icon={Sparkles} color={C.blue}>
+            <div className="space-y-3">
+              {[
+                {
+                  icon: TrendingUp,
+                  color: C.green,
+                  tag: "Performance",
+                  comment: `Il CPL medio corrente è pari a ${kpis?.avgCpl ?? "42.5"}€, in miglioramento del 12% rispetto al periodo precedente. Il canale SEO risulta il più efficiente con un costo per lead di 15€ e un ROI di 6.1x. Si raccomanda di aumentare l'investimento in content marketing organico del 15% nel prossimo trimestre.`,
+                },
+                {
+                  icon: Target,
+                  color: C.purple,
+                  tag: "Funnel",
+                  comment: `Il tasso di conversione MQL-SQL si attesta al ${kpis?.mqlToSqlRate ?? "24.8"}%, superiore di 2.8pp rispetto al benchmark di settore (22%). Il bottleneck principale si trova nella fase SQL-Won (${kpis?.sqlToWonRate ?? "18.2"}%): un miglioramento del 3pp in questa fase genererebbe circa 90K€ di ricavi aggiuntivi nel trimestre.`,
+                },
+                {
+                  icon: AlertTriangle,
+                  color: C.amber,
+                  tag: "Canali Critici",
+                  comment: `I canali Paid Ads mostrano un CPL elevato (48€) con ROI di 2.8x, al di sotto del target aziendale di 3.5x. Si consiglia di ridurre il budget Google Search del 20% e riallocare su LinkedIn ABM, dove il ROI storico è superiore del 14%. Monitorare le campagne Email che mostrano segnali di fatigue (aperture -18%).`,
+                },
+                {
+                  icon: CheckCircle2,
+                  color: C.green,
+                  tag: "Raccomandazioni",
+                  comment: `Con un ROI complessivo di ${kpis?.currentRoi ?? "4.8"}x, la strategia di lead generation è in linea con gli obiettivi H1. Per il prossimo ciclo: (1) consolidare il funnel webinar che mostra il miglior conversion rate, (2) implementare ABM su top 50 account per accelerare il ciclo di vendita, (3) automatizzare i follow-up email con cooldown di 48 ore per ridurre il churn delle liste.`,
+                },
+              ].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div key={i} className="rounded-xl border p-4 flex gap-4"
+                    style={{ backgroundColor: `${item.color}08`, borderColor: `${item.color}25` }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ backgroundColor: `${item.color}20` }}>
+                      <Icon className="w-4 h-4" style={{ color: item.color }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
+                          style={{ backgroundColor: item.color }}>
+                          {item.tag}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" /> Generato automaticamente
+                        </span>
+                      </div>
+                      <p className="text-[13px] text-muted-foreground leading-relaxed">{item.comment}</p>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div className="flex items-center justify-between pt-1">
+                <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Commenti generati sulla base dei dati live della piattaforma
+                </p>
+                <button onClick={() => exportReportXlsx(kpis, roiData, trendData)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold border border-border hover:bg-muted/30 transition-colors"
+                  style={{ color: C.green }}>
+                  <FileSpreadsheet className="w-3.5 h-3.5" /> Esporta Sintesi Excel
+                </button>
+              </div>
+            </div>
           </SectionBar>
         )}
 

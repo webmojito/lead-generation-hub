@@ -30,6 +30,7 @@ import {
   Activity, ArrowUpRight, ArrowDownRight, Flame, AlertTriangle,
   Clock, Users, X, ChevronsUpDown, ChevronUp,
   Target, BarChart2, Zap, Info,
+  Mail, Linkedin, Search, Megaphone, FileText, Video, Globe, Phone,
 } from "lucide-react";
 
 /* ─── costanti colori ─── */
@@ -52,7 +53,7 @@ const AUTO_REFRESH_OPTIONS = [
 ];
 
 /* ─── helpers formato ─── */
-function fmt$  (v: number) { return new Intl.NumberFormat("it-IT", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v); }
+function fmt$  (v: number) { return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v); }
 function fmtK  (v: number) { return new Intl.NumberFormat("it-IT", { notation: "compact", maximumFractionDigits: 1 }).format(v); }
 function fmtPct(v: number) { return `${v.toFixed(1)}%`; }
 function fmtN  (v: number) { return v.toLocaleString("it-IT"); }
@@ -100,6 +101,19 @@ function TrendBadge({ val, inverse = false }: { val: number; inverse?: boolean }
   );
 }
 
+/* ─── icone canali ─── */
+function channelIcon(name: string) {
+  const n = (name ?? "").toLowerCase();
+  if (n.includes("email") || n.includes("newsletter"))           return <Mail className="w-4 h-4" />;
+  if (n.includes("linkedin"))                                    return <Linkedin className="w-4 h-4" />;
+  if (n.includes("seo") || n.includes("organic") || n.includes("search")) return <Search className="w-4 h-4" />;
+  if (n.includes("paid") || n.includes("ads") || n.includes("adv") || n.includes("google")) return <Megaphone className="w-4 h-4" />;
+  if (n.includes("content") || n.includes("blog"))              return <FileText className="w-4 h-4" />;
+  if (n.includes("webinar") || n.includes("video") || n.includes("youtube")) return <Video className="w-4 h-4" />;
+  if (n.includes("phone") || n.includes("call") || n.includes("telefon")) return <Phone className="w-4 h-4" />;
+  return <Globe className="w-4 h-4" />;
+}
+
 /* ─── icona trend tabella ─── */
 function TrendIcon({ t }: { t: string }) {
   if (t === "up")   return <ArrowUpRight   className="w-4 h-4 text-green-400" />;
@@ -122,8 +136,8 @@ function CanalDetailModal({ canale, onClose, isDark }: { canale: any; onClose: (
           <X className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)" }}>
-            {canale.name.charAt(0)}
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${C.blue}18`, color: C.blue }}>
+            {channelIcon(canale.name)}
           </div>
           <div>
             <h2 className="font-bold text-xl">{canale.name}</h2>
@@ -235,7 +249,10 @@ export default function Dashboard() {
       header: "CANALE",
       cell: ({ row }) => (
         <div className="flex items-center gap-2 font-semibold min-w-[130px]">
-          <span className="text-lg w-6 text-center">{row.original.name.charAt(0)}</span>
+          <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: `${C.blue}18`, color: C.blue }}>
+            {channelIcon(row.original.name)}
+          </span>
           {row.original.name}
         </div>
       ),
@@ -334,10 +351,10 @@ export default function Dashboard() {
           <p className="text-xs text-muted-foreground font-medium">{subtitle}</p>
           {active && !kpisQuery.isLoading && (
             <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground space-y-1">
-              {id === "cpl" && <p>Obiettivo: ridurre a $35/lead entro Q4</p>}
-              {id === "mql" && <p>Benchmark settore: 22% — sei sopra del {(24.8 - 22).toFixed(1)}pp</p>}
-              {id === "sql" && <p>Migliorare al 21% = +$90K Closed Won stim.</p>}
-              {id === "roi" && <p>ROI generato: $850K — target anno: $1.1M</p>}
+              {id === "cpl" && <p>Obiettivo: ridurre a 35€/lead entro Q4</p>}
+              {id === "mql" && <p>Benchmark settore: 22% - sei sopra del {(24.8 - 22).toFixed(1)}pp</p>}
+              {id === "sql" && <p>Migliorare al 21% = +90K€ Closed Won stim.</p>}
+              {id === "roi" && <p>ROI generato: 850K€ - target anno: 1,1M€</p>}
             </div>
           )}
         </CardContent>
@@ -460,10 +477,10 @@ export default function Dashboard() {
 
           {/* ── KPI row ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <KpiCard id="cpl"   label="CPL Medio"      value={`$${kpis?.avgCpl}`}          change={kpis?.avgCplChange ?? 0}       subtitle="Efficienza vs anno prec."    icon={Activity}    inverse />
-            <KpiCard id="mql"   label="MQL → SQL"      value={`${kpis?.mqlToSqlRate}%`}    change={kpis?.mqlToSqlChange ?? 0}     subtitle="Benchmark obiettivo: 22%"   icon={TrendingUp} />
-            <KpiCard id="sql"   label="SQL → Won"      value={`${kpis?.sqlToWonRate}%`}    change={kpis?.sqlToWonChange ?? 0}     subtitle="Segmento alta velocità"     icon={TrendingUp} />
-            <KpiCard id="roi"   label="ROI Corrente"   value={`${kpis?.currentRoi}x`}      change={kpis?.currentRoiChange ?? 0}   subtitle="$850K generati"             icon={Activity} />
+            <KpiCard id="cpl"   label="CPL Medio"      value={`${kpis?.avgCpl}€`}           change={kpis?.avgCplChange ?? 0}       subtitle="Efficienza vs anno prec."    icon={Activity}    inverse />
+            <KpiCard id="mql"   label="MQL - SQL"      value={`${kpis?.mqlToSqlRate}%`}    change={kpis?.mqlToSqlChange ?? 0}     subtitle="Benchmark obiettivo: 22%"   icon={TrendingUp} />
+            <KpiCard id="sql"   label="SQL - Won"      value={`${kpis?.sqlToWonRate}%`}    change={kpis?.sqlToWonChange ?? 0}     subtitle="Segmento alta velocità"     icon={TrendingUp} />
+            <KpiCard id="roi"   label="ROI Corrente"   value={`${kpis?.currentRoi}x`}      change={kpis?.currentRoiChange ?? 0}   subtitle="850K€ generati"             icon={Activity} />
           </div>
 
           {/* ── Stats row ── */}
@@ -495,7 +512,7 @@ export default function Dashboard() {
               <CardHeader className="px-5 pt-5 pb-2 flex-row items-start justify-between space-y-0">
                 <div>
                   <CardTitle className="text-base font-bold">Velocità del Funnel</CardTitle>
-                  <CardDescription className="text-xs mt-0.5">Progressione mensile MQL vs SQL — obiettivi inclusi</CardDescription>
+                  <CardDescription className="text-xs mt-0.5">Progressione mensile MQL vs SQL - obiettivi inclusi</CardDescription>
                 </div>
                 {!loading && velocityData.length > 0 && (
                   <CSVLink data={velocityData} filename="funnel-velocity.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-lg hover:opacity-80 transition-opacity"
@@ -587,7 +604,7 @@ export default function Dashboard() {
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
               <div>
                 <CardTitle className="text-base font-bold">Analisi Canali di Acquisizione</CardTitle>
-                <CardDescription className="text-xs mt-0.5">Efficienza cross-canale e tracciamento conversioni — clicca una riga per i dettagli</CardDescription>
+                <CardDescription className="text-xs mt-0.5">Efficienza cross-canale e tracciamento conversioni - clicca una riga per i dettagli</CardDescription>
               </div>
               <button className="text-xs font-semibold text-primary hover:underline transition-colors">
                 Vedi report completo →
@@ -654,9 +671,9 @@ export default function Dashboard() {
                       <button key={i} onClick={() => setSelectedCanale({ ...c, mqls: c.leads, sqls: Math.round(c.leads * 0.25), conversionRate: 25, pipelineContribution: 15, wonContribution: 12, roi: (30 / c.cpl).toFixed(1), trend: "up", avgConversionDays: 22 })}
                         className="w-full flex items-center justify-between p-4 hover:bg-primary/5 transition-colors text-left">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-                            style={{ backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)", color: C.blue }}>
-                            {c.name.charAt(0)}
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${C.blue}18`, color: C.blue }}>
+                            {channelIcon(c.name)}
                           </div>
                           <div>
                             <p className="font-semibold text-sm">{c.name}</p>
@@ -665,7 +682,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-right shrink-0 ml-3">
                           <p className="font-bold text-sm">{fmtN(c.leads)} lead</p>
-                          <p className="text-[11px] font-bold text-green-400">CPL ${c.cpl.toFixed(2)}</p>
+                          <p className="text-[11px] font-bold text-green-400">CPL {c.cpl.toFixed(2)}€</p>
                         </div>
                       </button>
                     ))}
@@ -691,9 +708,9 @@ export default function Dashboard() {
                       <button key={i} onClick={() => setSelectedCanale({ ...c, mqls: c.leads, sqls: Math.round(c.leads * 0.1), conversionRate: 10, pipelineContribution: 3, wonContribution: 2, roi: (10 / c.cpl).toFixed(1), trend: "down", avgConversionDays: 55 })}
                         className="w-full flex items-center justify-between p-4 hover:bg-red-500/5 transition-colors text-left">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-                            style={{ backgroundColor: isDark ? "rgba(255,0,0,0.08)" : "rgba(255,0,0,0.05)", color: C.red }}>
-                            {c.name.charAt(0)}
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${C.red}18`, color: C.red }}>
+                            {channelIcon(c.name)}
                           </div>
                           <div>
                             <p className="font-semibold text-sm">{c.name}</p>
@@ -702,7 +719,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-right shrink-0 ml-3">
                           <p className="font-bold text-sm">{fmtN(c.leads)} lead</p>
-                          <p className="text-[11px] font-bold text-red-400">CPL ${c.cpl.toFixed(2)}</p>
+                          <p className="text-[11px] font-bold text-red-400">CPL {c.cpl.toFixed(2)}€</p>
                         </div>
                       </button>
                     ))}
@@ -717,12 +734,12 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-5 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                <span className="font-bold text-foreground">{kpis ? fmtN(kpis.totalContacts) : "—"}</span>
-                <span>contatti totali nel DB</span>
+                <span className="font-bold text-foreground">{kpis ? fmtN(kpis.totalContacts) : "-"}</span>
+                <span>contatti totali nel Database</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span className="font-bold text-foreground">{kpis?.avgConversionTimeDays ?? "—"} gg</span>
+                <span className="font-bold text-foreground">{kpis?.avgConversionTimeDays ?? "-"} gg</span>
                 <span>tempo medio di conversione</span>
               </div>
             </div>
