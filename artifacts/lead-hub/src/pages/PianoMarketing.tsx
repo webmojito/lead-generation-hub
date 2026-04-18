@@ -40,7 +40,7 @@ function exportPianoExcel() {
     { Sezione: "Visione", Contenuto: "Diventare il leader indiscusso nelle soluzioni SaaS per la gestione dei flussi di lavoro Enterprise entro il Q4 2025." },
     { Sezione: "Obiettivi Business", Contenuto: "+65% crescita ARR, Churn Rate < 3%, Top 3 Quadrante Magico" },
     { Sezione: "Mercato", Contenuto: "Opportunità EMEA stimata: 150M€" },
-    { Sezione: "Budget Totale", Contenuto: "1.2M€ allocati per il 2024, ROI atteso 4.2x entro 18 mesi" },
+    { Sezione: "Budget Totale", Contenuto: "1.2M€ allocati per il 2026, ROI atteso 4.2x entro 18 mesi" },
     { Sezione: "Priorità", Contenuto: "Lead Gen alta qualità, ABM, ottimizzazione funnel" },
     { Sezione: "Impatto Atteso", Contenuto: "+25% quota di mercato, posizionamento Top 3" },
   ]), "Riepilogo Esecutivo");
@@ -70,7 +70,7 @@ function exportPianoExcel() {
 function exportPianoWord() {
   const html = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
-    <head><meta charset='utf-8'><title>Piano Marketing 2024</title>
+    <head><meta charset='utf-8'><title>Piano Marketing 2026</title>
     <style>
       body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; margin: 2cm; }
       h1 { font-size: 18pt; color: #7C3AED; }
@@ -82,7 +82,7 @@ function exportPianoWord() {
       .badge { background: #7C3AED22; color: #7C3AED; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: bold; }
       .kpi { font-size: 14pt; font-weight: bold; color: #C13584; }
     </style></head><body>
-    <h1>Piano Marketing Strategico 2024</h1>
+    <h1>Piano Marketing Strategico 2026</h1>
     <p>Documentazione esecutiva per l'espansione nel mercato SaaS Enterprise.</p>
     <h2>Riepilogo Esecutivo</h2>
     <table><tr><th>Area</th><th>Dettaglio</th></tr>
@@ -103,7 +103,7 @@ function exportPianoWord() {
     <tr><td><span class='badge'>B2B · Content</span> Content & SEO</td><td>Autorità SaaS Enterprise</td><td class='kpi'>20.000€</td><td>5K download/mese</td></tr>
     <tr><td><span class='badge'>B2B · ABM</span> Account-Based Marketing</td><td>Top 50 account target</td><td class='kpi'>35.000€</td><td>10 SQL/account</td></tr>
     </table>
-    <h2>Roadmap H1-H2 2024</h2>
+    <h2>Roadmap H1-H2 2026</h2>
     <table><tr><th>Fase</th><th>Label</th><th>Azioni Principali</th></tr>
     <tr><td>Gen-Feb</td><td>Setup & Foundation</td><td>CRM migration, SEO audit, LinkedIn setup</td></tr>
     <tr><td>Mar-Apr</td><td>Launch & Test</td><td>Campagne Paid live, Newsletter, Webinar series</td></tr>
@@ -165,7 +165,7 @@ export default function PianoMarketing() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
             <h1 className="font-extrabold text-[28px] tracking-tight leading-none">
-              Piano Marketing Strategico 2024
+              Piano Marketing Strategico 2026
             </h1>
             <p className="text-muted-foreground mt-1.5 text-[14px]">
               Documentazione esecutiva per l'espansione nel mercato SaaS Enterprise.
@@ -209,7 +209,7 @@ export default function PianoMarketing() {
           <aside className="hidden lg:block w-56 shrink-0">
             <div className="sticky top-20 rounded-2xl border border-border bg-card p-3 space-y-0.5">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-3 py-2">
-                Strategia 2024-2025
+                Strategia 2026-2027
               </p>
               {SECTIONS.map(s => (
                 <button key={s.id} onClick={() => scrollTo(s.id)}
@@ -245,7 +245,7 @@ export default function PianoMarketing() {
                   { icon: <Globe className="w-5 h-5" />, color: C.amber,  title: "Mercato",         body: "Opportunità di espansione nel mercato EMEA con un valore potenziale stimato di 150M€." },
                   { icon: <Zap className="w-5 h-5" />, color: C.purple, title: "Priorità",         body: "Focus su Lead Generation di alta qualità, Account Based Marketing e ottimizzazione del funnel." },
                   { icon: <TrendingUp className="w-5 h-5" />, color: C.blue, title: "Impatto Atteso", body: "Incremento del 25% della quota di mercato e posizionamento come Top 3 nel Quadrante Magico." },
-                  { icon: <DollarSign className="w-5 h-5" />, color: C.green, title: "Budget Totale", body: "1.2M€ allocati per il 2024, con un ROI atteso di 4.2x entro 18 mesi." },
+                  { icon: <DollarSign className="w-5 h-5" />, color: C.green, title: "Budget Totale", body: "1.2M€ allocati per il 2026, con un ROI atteso di 4.2x entro 18 mesi." },
                 ].map((c, i) => (
                   <Card key={i} className="hover:border-primary/30 transition-colors cursor-default">
                     <CardContent className="p-5">
