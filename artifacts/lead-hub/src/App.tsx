@@ -6,6 +6,8 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import RoiCalculator from "@/pages/RoiCalculator";
 import AiStrategist from "@/pages/AiStrategist";
+import PianoMarketing from "@/pages/PianoMarketing";
+import ImportDati from "@/pages/ImportDati";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient({
@@ -13,9 +15,11 @@ const queryClient = new QueryClient({
 });
 
 const NAV_ITEMS = [
-  { href: "/",              label: "Dashboard",      icon: "📊" },
-  { href: "/roi-calculator", label: "ROI Calculator", icon: "🧮" },
-  { href: "/ai-strategist",  label: "AI Strategist",  icon: "🤖" },
+  { href: "/",               label: "Dashboard",       icon: "📊" },
+  { href: "/roi-calculator", label: "ROI Calculator",  icon: "🧮" },
+  { href: "/ai-strategist",  label: "AI Strategist",   icon: "🤖" },
+  { href: "/piano-marketing", label: "Piano Marketing", icon: "🗺️" },
+  { href: "/import-dati",    label: "Import Dati",     icon: "📥" },
 ];
 
 function NavBar() {
@@ -53,9 +57,11 @@ function Router() {
     <>
       <NavBar />
       <Switch>
-        <Route path="/"               component={Dashboard} />
-        <Route path="/roi-calculator" component={RoiCalculator} />
-        <Route path="/ai-strategist"  component={AiStrategist} />
+        <Route path="/"                component={Dashboard} />
+        <Route path="/roi-calculator"  component={RoiCalculator} />
+        <Route path="/ai-strategist"   component={AiStrategist} />
+        <Route path="/piano-marketing" component={PianoMarketing} />
+        <Route path="/import-dati"     component={ImportDati} />
         <Route component={NotFound} />
       </Switch>
     </>
