@@ -123,7 +123,7 @@ export default function RoiCalculator() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="font-extrabold text-[28px] tracking-tight leading-none">
-              ROI Calculator & Simulator 🚀
+              ROI Calculator & Simulator
             </h1>
             <p className="text-muted-foreground mt-1.5 text-[14px]">
               Piano Marketing Pro · Previsione Strategica Q3
@@ -145,7 +145,7 @@ export default function RoiCalculator() {
               <CardHeader className="px-5 pt-5 pb-3">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <Users className="w-4 h-4" style={{ color: C.blue }} />
-                  1. Parametri di Input 💰
+                  1. Parametri di Input
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-5 pb-5 space-y-5">
@@ -157,10 +157,15 @@ export default function RoiCalculator() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
-                      type="number" value={budget} onChange={e => setBudget(Number(e.target.value))}
+                      type="text" inputMode="numeric"
+                      value={budget === 0 ? "" : budget.toString()}
+                      onChange={e => {
+                        const raw = e.target.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
+                        setBudget(raw ? parseInt(raw, 10) : 0);
+                      }}
                       className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm font-semibold bg-muted/40 border border-border focus:outline-none focus:ring-2 focus:border-transparent"
                       style={{ "--tw-ring-color": C.blue } as any}
-                      min={1000} step={1000}
+                      placeholder="25000"
                     />
                   </div>
                 </div>
@@ -269,7 +274,7 @@ export default function RoiCalculator() {
                 <div>
                   <CardTitle className="text-sm font-bold flex items-center gap-2">
                     <Calculator className="w-4 h-4" style={{ color: C.purple }} />
-                    Simulatore 'What-if' Interattivo 🎛️
+                    Simulatore 'What-if' Interattivo
                   </CardTitle>
                   <CardDescription className="text-xs mt-0.5">
                     Simula variazioni per vedere l'impatto sul tuo bottom line.
@@ -301,9 +306,9 @@ export default function RoiCalculator() {
 
                 {/* Growth potential card */}
                 <div className="rounded-2xl p-4 flex items-center gap-4" style={{ backgroundColor: `${C.green}18`, border: `1px solid ${C.green}30` }}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${C.green}25` }}>
-                    🚀
+                    <TrendingUp className="w-6 h-6" style={{ color: C.green }} />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">POTENZIALE DI CRESCITA</p>

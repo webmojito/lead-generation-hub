@@ -768,10 +768,10 @@ export default function Assessment() {
             <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Business Assessment</span>
           </div>
           <h1 className="font-extrabold text-[28px] tracking-tight leading-none mb-1.5">
-            Configura il tuo profilo aziendale
+            Business Assessment
           </h1>
           <p className="text-muted-foreground text-[14px]">
-            Scegli il tipo di assessment in base alla dimensione e alla maturità della tua azienda.
+            Configura il tuo profilo aziendale in base alle caratteristiche e alla maturità della tua azienda.
           </p>
         </div>
 

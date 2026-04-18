@@ -5,6 +5,7 @@ import {
   Send, RefreshCw, AlertTriangle, CheckCircle2, Sparkles,
   TrendingDown, TrendingUp, Globe, BookOpen, Clock, Tag, Filter,
   Mail, Megaphone, Linkedin, Bot, Shield, Target, Video,
+  FileText, BarChart2, User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -126,7 +127,7 @@ export default function AiStrategist() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="font-extrabold text-[28px] tracking-tight leading-none flex items-center gap-3">
-              AI Strategist & Hub di Marketing Intelligence 🤖✨
+              AI Strategist & Hub di Marketing Intelligence
             </h1>
             <p className="text-muted-foreground mt-1.5 text-[14px]">
               Motore strategico in tempo reale per lead generation ad alte prestazioni
@@ -134,11 +135,11 @@ export default function AiStrategist() {
           </div>
           <div className="flex gap-2">
             <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-border hover:border-primary/40 transition-colors">
-              📄 Esporta Piano (PDF)
+              <FileText className="w-4 h-4" /> Esporta Piano (PDF)
             </button>
             <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-85"
               style={{ backgroundColor: C.green }}>
-              📊 Scarica Template Excel
+              <BarChart2 className="w-4 h-4" /> Scarica Template Excel
             </button>
           </div>
         </div>
@@ -208,7 +209,9 @@ export default function AiStrategist() {
           <CardHeader className="px-5 py-3.5 border-b border-border flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: `${C.blue}20` }}>🤖</div>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: `${C.blue}20` }}>
+                  <Bot className="w-5 h-5" style={{ color: C.blue }} />
+                </div>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-card" />
               </div>
               <div>
@@ -227,7 +230,9 @@ export default function AiStrategist() {
               {messages.map((m, i) => (
                 <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} gap-2.5`}>
                   {m.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0 mt-0.5" style={{ backgroundColor: `${C.blue}20` }}>🤖</div>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${C.blue}20` }}>
+                      <Bot className="w-4 h-4" style={{ color: C.blue }} />
+                    </div>
                   )}
                   <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${m.role === "user" ? "rounded-tr-sm" : "rounded-tl-sm"}`}
                     style={m.role === "user"
@@ -239,8 +244,8 @@ export default function AiStrategist() {
                     <p className="text-[10px] mt-2 opacity-50">{m.ts.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}</p>
                   </div>
                   {m.role === "user" && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 bg-muted">
-                      👤
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-muted">
+                      <User className="w-4 h-4 text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -248,7 +253,9 @@ export default function AiStrategist() {
 
               {isLoading && (
                 <div className="flex gap-2.5">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0" style={{ backgroundColor: `${C.blue}20` }}>🤖</div>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.blue}20` }}>
+                    <Bot className="w-4 h-4" style={{ color: C.blue }} />
+                  </div>
                   <div className="rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5" style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                     {[0, 1, 2].map(j => (
                       <div key={j} className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: C.blue, animationDelay: `${j * 0.15}s` }} />

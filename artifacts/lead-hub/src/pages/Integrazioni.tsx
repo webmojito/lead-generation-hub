@@ -16,29 +16,31 @@ type ConnStatus = "connected" | "disconnected" | "error" | "pending";
 interface Integration {
   id: string; name: string; desc: string; category: string;
   status: ConnStatus; lastSync?: string; records?: string;
-  logo: string; logoColor: string; docsUrl?: string;
+  logoUrl: string; logoColor: string; logoBg: string; docsUrl?: string;
 }
+
+const SI = (slug: string, hex: string) => `https://cdn.simpleicons.org/${slug}/${hex}`;
 
 const INTEGRATIONS: Integration[] = [
   /* CRM */
-  { id: "salesforce", name: "Salesforce",    category: "CRM",        status: "disconnected", logo: "SF", logoColor: "#00A1E0", desc: "Sincronizza Lead, Opportunity e Account dal tuo CRM enterprise.", docsUrl: "https://salesforce.com" },
-  { id: "hubspot",    name: "HubSpot",       category: "CRM",        status: "connected",    lastSync: "2 min fa", records: "1.243 contatti", logo: "HS", logoColor: "#FF7A59", desc: "CRM marketing automation — Lead, Deal, Contact sync bidirezionale." },
-  { id: "pipedrive",  name: "Pipedrive",     category: "CRM",        status: "disconnected", logo: "PD", logoColor: "#00c44f", desc: "Pipeline vendite e tracking opportunità per team sales SMB." },
+  { id: "salesforce",     name: "Salesforce",         category: "CRM",         status: "disconnected", logoUrl: SI("salesforce","00A1E0"),       logoColor: "#00A1E0", logoBg: "#00A1E015", desc: "Sincronizza Lead, Opportunity e Account dal tuo CRM enterprise.",           docsUrl: "https://salesforce.com" },
+  { id: "hubspot",        name: "HubSpot",             category: "CRM",         status: "connected",    lastSync: "2 min fa", records: "1.243 contatti", logoUrl: SI("hubspot","FF7A59"), logoColor: "#FF7A59", logoBg: "#FF7A5915", desc: "CRM marketing automation — Lead, Deal, Contact sync bidirezionale." },
+  { id: "pipedrive",      name: "Pipedrive",           category: "CRM",         status: "disconnected", logoUrl: SI("pipedrive","00C44F"),         logoColor: "#00C44F", logoBg: "#00C44F15", desc: "Pipeline vendite e tracking opportunità per team sales SMB." },
   /* Email */
-  { id: "mailchimp",  name: "Mailchimp",     category: "Email",      status: "connected",    lastSync: "1h fa", records: "3.891 iscritti", logo: "MC", logoColor: "#FFE01B", desc: "Gestisci le tue liste email, campagne e automation da un'unica interfaccia." },
-  { id: "activecampaign", name: "ActiveCampaign", category: "Email", status: "error",        lastSync: "Errore 401", logo: "AC", logoColor: "#356AE6", desc: "Marketing automation e email marketing per B2B e B2C." },
-  { id: "brevo",      name: "Brevo",         category: "Email",      status: "disconnected", logo: "BR", logoColor: "#0092FF", desc: "Piattaforma email + SMS + WhatsApp per campagne multicanale." },
+  { id: "mailchimp",      name: "Mailchimp",           category: "Email",       status: "connected",    lastSync: "1h fa", records: "3.891 iscritti", logoUrl: SI("mailchimp","FFE01B"),   logoColor: "#FFE01B", logoBg: "#FFE01B15", desc: "Gestisci le tue liste email, campagne e automation da un'unica interfaccia." },
+  { id: "activecampaign", name: "ActiveCampaign",      category: "Email",       status: "error",        lastSync: "Errore 401",                    logoUrl: SI("activecampaign","356AE6"), logoColor: "#356AE6", logoBg: "#356AE615", desc: "Marketing automation e email marketing per B2B e B2C." },
+  { id: "brevo",          name: "Brevo",               category: "Email",       status: "disconnected", logoUrl: SI("brevo","0B996E"),             logoColor: "#0B996E", logoBg: "#0B996E15", desc: "Piattaforma email + SMS + WhatsApp per campagne multicanale." },
   /* Analytics */
-  { id: "ga4",        name: "Google Analytics 4", category: "Analytics", status: "connected", lastSync: "5 min fa", records: "12.4K sessioni/mese", logo: "GA", logoColor: "#E37400", desc: "Tracciamento comportamento utenti, conversioni e attribuzione campagne." },
-  { id: "mixpanel",   name: "Mixpanel",      category: "Analytics",  status: "disconnected", logo: "MX", logoColor: "#7856ff", desc: "Product analytics e funnel di engagement per app SaaS." },
+  { id: "ga4",            name: "Google Analytics 4",  category: "Analytics",   status: "connected",    lastSync: "5 min fa", records: "12.4K sessioni/mese", logoUrl: SI("googleanalytics","E37400"), logoColor: "#E37400", logoBg: "#E3740015", desc: "Tracciamento comportamento utenti, conversioni e attribuzione campagne." },
+  { id: "mixpanel",       name: "Mixpanel",            category: "Analytics",   status: "disconnected", logoUrl: SI("mixpanel","7856FF"),          logoColor: "#7856FF", logoBg: "#7856FF15", desc: "Product analytics e funnel di engagement per app SaaS." },
   /* Ads */
-  { id: "google_ads", name: "Google Ads",    category: "Advertising", status: "connected",   lastSync: "15 min fa", records: "€4.2K spesa/mese", logo: "GG", logoColor: "#4285F4", desc: "Import automatico campagne, spend e lead form da Google Ads." },
-  { id: "linkedin_ads", name: "LinkedIn Ads", category: "Advertising", status: "pending",   logo: "LI", logoColor: "#0077B5", desc: "Sincronizzazione campagne, lead gen forms e audience insights LinkedIn." },
-  { id: "meta_ads",   name: "Meta Ads",      category: "Advertising", status: "disconnected", logo: "FB", logoColor: "#1877F2", desc: "Campagne Facebook e Instagram Ads — import conversioni e ROAS." },
+  { id: "google_ads",     name: "Google Ads",          category: "Advertising", status: "connected",    lastSync: "15 min fa", records: "€4.2K spesa/mese", logoUrl: SI("googleads","4285F4"), logoColor: "#4285F4", logoBg: "#4285F415", desc: "Import automatico campagne, spend e lead form da Google Ads." },
+  { id: "linkedin_ads",   name: "LinkedIn Ads",        category: "Advertising", status: "pending",      logoUrl: SI("linkedin","0A66C2"),          logoColor: "#0A66C2", logoBg: "#0A66C215", desc: "Sincronizzazione campagne, lead gen forms e audience insights LinkedIn." },
+  { id: "meta_ads",       name: "Meta Ads",            category: "Advertising", status: "disconnected", logoUrl: SI("meta","0081FB"),              logoColor: "#0081FB", logoBg: "#0081FB15", desc: "Campagne Facebook e Instagram Ads — import conversioni e ROAS." },
   /* Collaboration */
-  { id: "slack",      name: "Slack",         category: "Notifiche",  status: "connected",    lastSync: "live", records: "#marketing-alerts", logo: "SL", logoColor: "#4A154B", desc: "Ricevi alert real-time su anomalie KPI e notifiche campagne." },
-  { id: "notion",     name: "Notion",        category: "Notifiche",  status: "disconnected", logo: "NO", logoColor: "#000000", desc: "Sincronizza il Piano Marketing e i report direttamente in Notion." },
-  { id: "zapier",     name: "Zapier",        category: "Automazione", status: "disconnected", logo: "ZP", logoColor: "#FF4A00", desc: "Connetti Lead Hub con oltre 5.000 app tramite workflow no-code." },
+  { id: "slack",          name: "Slack",               category: "Notifiche",   status: "connected",    lastSync: "live", records: "#marketing-alerts", logoUrl: SI("slack","E01E5A"), logoColor: "#E01E5A", logoBg: "#E01E5A15", desc: "Ricevi alert real-time su anomalie KPI e notifiche campagne." },
+  { id: "notion",         name: "Notion",              category: "Notifiche",   status: "disconnected", logoUrl: SI("notion","FFFFFF"),            logoColor: "#FFFFFF", logoBg: "#FFFFFF10", desc: "Sincronizza il Piano Marketing e i report direttamente in Notion." },
+  { id: "zapier",         name: "Zapier",              category: "Automazione", status: "disconnected", logoUrl: SI("zapier","FF4A00"),            logoColor: "#FF4A00", logoBg: "#FF4A0015", desc: "Connetti Lead Hub con oltre 5.000 app tramite workflow no-code." },
 ];
 
 const CATEGORIES = ["Tutte", "CRM", "Email", "Analytics", "Advertising", "Notifiche", "Automazione"];
@@ -61,9 +63,9 @@ function IntegrationCard({ intg, onToggle }: { intg: Integration; onToggle: (id:
       <CardHeader className="px-5 pt-5 pb-3">
         <div className="flex items-start gap-3">
           {/* Logo */}
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white shrink-0"
-            style={{ backgroundColor: intg.logoColor + "cc" }}>
-            {intg.logo}
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: intg.logoBg, border: `1px solid ${intg.logoColor}30` }}>
+            <img src={intg.logoUrl} alt={intg.name} className="w-5 h-5 object-contain" loading="lazy" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">

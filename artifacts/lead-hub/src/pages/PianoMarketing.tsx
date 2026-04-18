@@ -326,25 +326,75 @@ export default function PianoMarketing() {
 
             {/* 6 — Strategie di canale */}
             <div id="canali">
-              <SectionTitle emoji="📡" title="Top 3 Channel Strategy" id="canali" />
+              <SectionTitle title="Top 3 Channel Strategy" id="canali" />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { title: "Paid Ads (SEA/Social)", body: "Focus LinkedIn Ads su C-Level e Google Search high-intent.", budget: "45K€/MO", kpi: "$2.50 CPC", kpiColor: C.blue, budgetColor: C.blue },
-                  { title: "Content Marketing",     body: "Case studies mensili, Whitepapers e video tutorial tecnici.", budget: "20K€/MO", kpi: "5K DOWNLOADS", kpiColor: C.green, budgetColor: C.purple },
-                  { title: "Direct Sales & ABM",    body: "Account Based Marketing su top 50 target accounts.", budget: "35K€/MO", kpi: "10 SQL/ACC", kpiColor: C.amber, budgetColor: C.amber },
+                  {
+                    badge: "B2B · Paid",
+                    accent: C.blue,
+                    title: "Paid Ads — SEA & Social",
+                    obiettivo: "Generare lead qualificati su target C-Level con campagne LinkedIn e Google high-intent.",
+                    azioni: ["LinkedIn Document Ads + lead magnet premium", "Segmentazione per ruolo, settore e dimensione", "A/B test su 6 copy e 3 creatività differenti", "Ottimizzazione continua targeting e funnel"],
+                    risultati: [{ v: "45K€", l: "Budget mensile" }, { v: "$2.50", l: "CPC Target" }],
+                  },
+                  {
+                    badge: "B2B · Content",
+                    accent: C.purple,
+                    title: "Content & SEO",
+                    obiettivo: "Costruire autorità nel mercato SaaS Enterprise con contenuti ad alto valore educativo.",
+                    azioni: ["Case studies mensili + whitepapers verticali", "Ottimizzazione SEO per keyword intent commerciale", "Video tutorial tecnici per engagement qualificato", "Distribuzione su LinkedIn, newsletter e blog"],
+                    risultati: [{ v: "20K€", l: "Budget mensile" }, { v: "5K", l: "Download/mese" }],
+                  },
+                  {
+                    badge: "B2B · ABM",
+                    accent: C.amber,
+                    title: "Account-Based Marketing",
+                    obiettivo: "Chiudere i top 50 account target con un approccio 1:1 iperpersonalizzato multi-touch.",
+                    azioni: ["Identificazione e qualificazione top 50 accounts", "Campagne outreach personalizzate per account", "Intent data monitoring con 6sense e G2", "Sequenze multi-canale: email + LinkedIn + calls"],
+                    risultati: [{ v: "35K€", l: "Budget mensile" }, { v: "10 SQL", l: "per Account" }],
+                  },
                 ].map((c, i) => (
-                  <Card key={i} className="hover:border-primary/30 transition-colors">
-                    <CardContent className="p-5">
-                      <h3 className="font-bold text-sm mb-2">{c.title}</h3>
-                      <p className="text-[13px] text-muted-foreground mb-4 leading-relaxed">{c.body}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase">BUDGET: <span style={{ color: c.budgetColor }}>{c.budget}</span></span>
-                        <Badge className="text-[10px] font-bold" style={{ backgroundColor: `${c.kpiColor}15`, color: c.kpiColor, border: `1px solid ${c.kpiColor}30` }}>
-                          KPI: {c.kpi}
+                  <div key={i} className="rounded-xl overflow-hidden border border-border/50 card-hover"
+                    style={{ backgroundColor: "hsl(var(--card))" }}>
+                    <div className="h-1" style={{ background: `linear-gradient(90deg, #833AB4, #C13584, #F77737)` }} />
+                    <div className="p-5 space-y-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <Badge className="text-[9px] font-bold px-2 py-0.5" style={{ backgroundColor: `${c.accent}18`, color: c.accent, border: `1px solid ${c.accent}35` }}>
+                          {c.badge}
                         </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <h3 className="font-extrabold text-base leading-tight">{c.title}</h3>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Obiettivo</p>
+                        <p className="text-[12px] text-muted-foreground italic leading-relaxed">{c.obiettivo}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Intervento</p>
+                        <div className="space-y-1.5">
+                          {c.azioni.map((a, j) => (
+                            <div key={j} className="flex items-start gap-2">
+                              <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black text-white shrink-0 mt-0.5"
+                                style={{ background: "linear-gradient(135deg, #C13584, #F77737)" }}>
+                                {j + 1}
+                              </span>
+                              <p className="text-[11px] text-muted-foreground leading-tight">{a}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Risultati Attesi</p>
+                        <div className="flex gap-3">
+                          {c.risultati.map((r, j) => (
+                            <div key={j} className="rounded-lg px-3 py-2 flex-1 text-center" style={{ backgroundColor: "#C1358415" }}>
+                              <p className="text-lg font-extrabold" style={{ color: "#C13584" }}>{r.v}</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{r.l}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
