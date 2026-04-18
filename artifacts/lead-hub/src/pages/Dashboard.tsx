@@ -30,7 +30,7 @@ import {
   Activity, ArrowUpRight, ArrowDownRight, Flame, AlertTriangle,
   Clock, Users, X, ChevronsUpDown, ChevronUp,
   Target, BarChart2, Zap, Info,
-  Mail, Linkedin, Search, Megaphone, FileText, Video, Globe, Phone,
+  Mail, Linkedin, Search, Megaphone, FileText, Video, Globe, Phone, PhoneCall, CalendarDays,
 } from "lucide-react";
 
 /* ─── costanti colori ─── */
@@ -104,14 +104,16 @@ function TrendBadge({ val, inverse = false }: { val: number; inverse?: boolean }
 /* ─── icone canali ─── */
 function channelIcon(name: string) {
   const n = (name ?? "").toLowerCase();
-  if (n.includes("email") || n.includes("newsletter"))           return <Mail className="w-4 h-4" />;
-  if (n.includes("linkedin"))                                    return <Linkedin className="w-4 h-4" />;
-  if (n.includes("seo") || n.includes("organic") || n.includes("search")) return <Search className="w-4 h-4" />;
-  if (n.includes("paid") || n.includes("ads") || n.includes("adv") || n.includes("google")) return <Megaphone className="w-4 h-4" />;
-  if (n.includes("content") || n.includes("blog"))              return <FileText className="w-4 h-4" />;
-  if (n.includes("webinar") || n.includes("video") || n.includes("youtube")) return <Video className="w-4 h-4" />;
-  if (n.includes("phone") || n.includes("call") || n.includes("telefon")) return <Phone className="w-4 h-4" />;
-  return <Globe className="w-4 h-4" />;
+  if (n.includes("email") || n.includes("newsletter"))                      return <Mail      className="w-4 h-4" style={{ color: "#2563EB" }} />;
+  if (n.includes("linkedin"))                                               return <Linkedin  className="w-4 h-4" style={{ color: "#0A66C2" }} />;
+  if (n.includes("seo") || n.includes("organic") || n.includes("search"))  return <Search    className="w-4 h-4" style={{ color: "#16A34A" }} />;
+  if (n.includes("paid") || n.includes("ads") || n.includes("adv") || n.includes("google")) return <Megaphone className="w-4 h-4" style={{ color: "#F97316" }} />;
+  if (n.includes("content") || n.includes("blog"))                         return <FileText  className="w-4 h-4" style={{ color: "#7C3AED" }} />;
+  if (n.includes("webinar") || n.includes("video") || n.includes("youtube")) return <Video  className="w-4 h-4" style={{ color: "#DC2626" }} />;
+  if (n.includes("phone") || n.includes("call") || n.includes("telefon"))  return <Phone     className="w-4 h-4" style={{ color: "#16A34A" }} />;
+  if (n.includes("outbound") || n.includes("cold"))                        return <PhoneCall className="w-4 h-4" style={{ color: "#E8006A" }} />;
+  if (n.includes("event") || n.includes("fiera") || n.includes("sito"))   return <CalendarDays className="w-4 h-4" style={{ color: "#F59E0B" }} />;
+  return <Globe className="w-4 h-4" style={{ color: "#6B7280" }} />;
 }
 
 /* ─── icona trend tabella ─── */

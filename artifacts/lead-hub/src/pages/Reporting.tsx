@@ -117,7 +117,7 @@ export default function Reporting() {
     { id: "roi",      label: "ROI & Canali",    icon: DollarSign  },
     { id: "ai",       label: "AI Insights",     icon: Brain       },
     { id: "piano",    label: "Piano Marketing", icon: Map         },
-    { id: "sintesi",  label: "Sintesi Auto",    icon: Sparkles    },
+    { id: "sintesi",  label: "Sintesi",          icon: Sparkles    },
   ];
 
   return (

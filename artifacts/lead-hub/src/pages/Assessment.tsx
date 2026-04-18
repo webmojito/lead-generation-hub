@@ -124,10 +124,10 @@ function RadioGroup({ val, set, options }: { val: string; set: (v: string) => vo
     <div className="flex flex-wrap gap-2">
       {options.map(o => (
         <button key={o.value} onClick={() => set(o.value)}
-          className="px-4 py-2 rounded-xl text-sm font-medium border transition-all"
+          className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
           style={val === o.value
-            ? { backgroundColor: `${C.blue}15`, borderColor: `${C.blue}60`, color: C.blue, fontWeight: 700 }
-            : { borderColor: "var(--border)", color: "var(--muted-foreground)" }}>
+            ? { backgroundColor: `${C.blue}18`, border: `1.5px solid ${C.blue}55`, color: C.blue, fontWeight: 700 }
+            : { backgroundColor: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.55)" }}>
           {o.label}
         </button>
       ))}
@@ -141,11 +141,11 @@ function MultiCheck({ val, set, options }: { val: string[]; set: (v: string[]) =
     <div className="flex flex-wrap gap-2">
       {options.map(o => (
         <button key={o} onClick={() => toggle(o)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm border transition-all"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-all"
           style={val.includes(o)
-            ? { backgroundColor: `${C.blue}12`, borderColor: `${C.blue}50`, color: C.blue, fontWeight: 600 }
-            : { borderColor: "var(--border)", color: "var(--muted-foreground)" }}>
-          {val.includes(o) && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+            ? { backgroundColor: `${C.blue}18`, border: `1.5px solid ${C.blue}55`, color: C.blue, fontWeight: 600 }
+            : { backgroundColor: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)" }}>
+          {val.includes(o) && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: C.blue }} />}
           {o}
         </button>
       ))}
