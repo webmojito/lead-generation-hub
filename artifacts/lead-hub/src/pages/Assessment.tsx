@@ -336,10 +336,10 @@ function Step5({ data, set }: { data: AssessmentData; set: (k: keyof AssessmentD
       <div>
         <Label text="Maturità del Team Marketing" hint="Valuta onestamente il livello attuale del tuo team e dei processi." />
         <RadioGroup val={data.maturitaMktg} set={v => set("maturitaMktg", v)} options={[
-          { value: "Nascente",     label: "🌱 Nascente — appena avviato" },
-          { value: "In sviluppo",  label: "🔧 In sviluppo — processi parziali" },
-          { value: "Strutturato",  label: "⚙️ Strutturato — team e tool attivi" },
-          { value: "Avanzato",     label: "🚀 Avanzato — data-driven & scalable" },
+          { value: "Nascente",     label: "Nascente — appena avviato" },
+          { value: "In sviluppo",  label: "In sviluppo — processi parziali" },
+          { value: "Strutturato",  label: "Strutturato — team e tool attivi" },
+          { value: "Avanzato",     label: "Avanzato — data-driven & scalable" },
         ]} />
       </div>
     </div>

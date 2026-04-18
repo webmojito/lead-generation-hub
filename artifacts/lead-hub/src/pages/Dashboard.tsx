@@ -334,10 +334,10 @@ export default function Dashboard() {
           <p className="text-xs text-muted-foreground font-medium">{subtitle}</p>
           {active && !kpisQuery.isLoading && (
             <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground space-y-1">
-              {id === "cpl" && <p>🎯 Obiettivo: ridurre a $35/lead entro Q4</p>}
-              {id === "mql" && <p>📊 Benchmark settore: 22% — sei sopra del {(24.8 - 22).toFixed(1)}pp</p>}
-              {id === "sql" && <p>💡 Migliorare al 21% = +$90K Closed Won stim.</p>}
-              {id === "roi" && <p>🔥 ROI generato: $850K — target anno: $1.1M</p>}
+              {id === "cpl" && <p>Obiettivo: ridurre a $35/lead entro Q4</p>}
+              {id === "mql" && <p>Benchmark settore: 22% — sei sopra del {(24.8 - 22).toFixed(1)}pp</p>}
+              {id === "sql" && <p>Migliorare al 21% = +$90K Closed Won stim.</p>}
+              {id === "roi" && <p>ROI generato: $850K — target anno: $1.1M</p>}
             </div>
           )}
         </CardContent>
@@ -359,7 +359,7 @@ export default function Dashboard() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="font-extrabold text-[30px] tracking-tight leading-none">
-                Lead Intelligence Hub 🚀
+                Lead Intelligence Hub
               </h1>
               <p className="text-muted-foreground mt-1.5 text-[14px]">
                 Segnali di domanda in tempo reale e tracciamento della velocità del funnel.
@@ -494,7 +494,7 @@ export default function Dashboard() {
             <Card className="lg:col-span-3 flex flex-col">
               <CardHeader className="px-5 pt-5 pb-2 flex-row items-start justify-between space-y-0">
                 <div>
-                  <CardTitle className="text-base font-bold">Velocità del Funnel 📈</CardTitle>
+                  <CardTitle className="text-base font-bold">Velocità del Funnel</CardTitle>
                   <CardDescription className="text-xs mt-0.5">Progressione mensile MQL vs SQL — obiettivi inclusi</CardDescription>
                 </div>
                 {!loading && velocityData.length > 0 && (
@@ -527,7 +527,7 @@ export default function Dashboard() {
             <Card className="lg:col-span-2 flex flex-col">
               <CardHeader className="px-5 pt-5 pb-2 flex-row items-start justify-between space-y-0">
                 <div>
-                  <CardTitle className="text-base font-bold">Performance vs Obiettivi 🎯</CardTitle>
+                  <CardTitle className="text-base font-bold">Performance vs Obiettivi</CardTitle>
                   <CardDescription className="text-xs mt-0.5">Avanzamento verso i target annuali</CardDescription>
                 </div>
                 {!loading && kpis && (
@@ -572,7 +572,7 @@ export default function Dashboard() {
                       ))}
                       <div className="text-center pt-1">
                         <Badge className="bg-primary/15 text-primary border-primary/25 text-[10px] font-bold">
-                          📈 In linea con target fine anno
+                          In linea con target fine anno
                         </Badge>
                       </div>
                     </div>
@@ -586,7 +586,7 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
               <div>
-                <CardTitle className="text-base font-bold">Analisi Canali di Acquisizione 📊</CardTitle>
+                <CardTitle className="text-base font-bold">Analisi Canali di Acquisizione</CardTitle>
                 <CardDescription className="text-xs mt-0.5">Efficienza cross-canale e tracciamento conversioni — clicca una riga per i dettagli</CardDescription>
               </div>
               <button className="text-xs font-semibold text-primary hover:underline transition-colors">
@@ -643,7 +643,7 @@ export default function Dashboard() {
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <Flame className="w-4 h-4 text-orange-400" /> Canali Top
                 </CardTitle>
-                <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-[10px] font-bold">HIGH ROI 🔥</Badge>
+                <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-[10px] font-bold">HIGH ROI</Badge>
               </CardHeader>
               <CardContent className="p-0">
                 {topChannelsQuery.isLoading ? (
@@ -680,7 +680,7 @@ export default function Dashboard() {
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-400" /> Canali Critici
                 </CardTitle>
-                <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-[10px] font-bold">ATTENZIONE ⚠️</Badge>
+                <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-[10px] font-bold">ATTENZIONE</Badge>
               </CardHeader>
               <CardContent className="p-0">
                 {topChannelsQuery.isLoading ? (

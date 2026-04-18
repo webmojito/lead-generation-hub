@@ -15,13 +15,13 @@ interface ChatMessage { role: "user" | "assistant"; content: string; ts: Date; }
 
 /* ─── problemi e opportunità statici ─── */
 const PROBLEMI = [
-  { icon: "✉️", title: "Email Fatigue nella Campagna B", desc: "I tassi di apertura sono scesi del 18% negli ultimi 7 giorni a causa di un'eccessiva frequenza." },
-  { icon: "📉", title: "Calo Lead ADV vs Benchmark",     desc: "Il CPC di Google Ads è aumentato del 22% mentre il CVR è rimasto stazionario." },
+  { icon: "EM", color: "#F97316", title: "Email Fatigue nella Campagna B", desc: "I tassi di apertura sono scesi del 18% negli ultimi 7 giorni a causa di un'eccessiva frequenza." },
+  { icon: "AD", color: "#DC2626", title: "Calo Lead ADV vs Benchmark",     desc: "Il CPC di Google Ads è aumentato del 22% mentre il CVR è rimasto stazionario." },
 ];
 
 const CORREZIONI = [
-  { icon: "📧", title: "Riduci la frequenza email del 20%",   desc: "Implementazione di un cooldown di 48 ore tra le sequenze per recuperare l'engagement." },
-  { icon: "💼", title: "Riapplica il budget su LinkedIn",      desc: "Sposta 4K/mese da Google Search a LinkedIn ABM; target ROAS 4.2x." },
+  { icon: "EM", color: "#16A34A", title: "Riduci la frequenza email del 20%",   desc: "Implementazione di un cooldown di 48 ore tra le sequenze per recuperare l'engagement." },
+  { icon: "LI", color: "#2563EB", title: "Riapplica il budget su LinkedIn",      desc: "Sposta 4K/mese da Google Search a LinkedIn ABM; target ROAS 4.2x." },
 ];
 
 const SUGGERIMENTI_RAPIDI = [
@@ -35,12 +35,12 @@ const SUGGERIMENTI_RAPIDI = [
 /* ─── trend globali mock ─── */
 const TREND_CATEGORIES = ["Tutti", "Lead Gen", "Automazione", "Paid Ads", "Trend"] as const;
 const TREND_ARTICLES = [
-  { cat: "Automazione",  flag: "IN TREND",  img: "🤖", title: "Come l'AI sta rivoluzionando il B2B Cold Outreach nel 2024",   desc: "Un nuovo studio mostra che gli agenti AI personalizzati stanno superando gli SDR umani del 34% nei tassi di...", mins: 6,  type: "Strategico"  },
-  { cat: "Lead Gen",     flag: "NUOVO",     img: "🍪", title: "La morte dei cookie di terze parti: cosa devono sapere i marketer", desc: "Le strategie di raccolta dati di prima parte non sono più opzionali. Scopri i migliori framework per la retent...", mins: 9,  type: "Psicologia"  },
-  { cat: "Paid Ads",     flag: "",          img: "💬", title: "LinkedIn Thought Leadership Ads: guida completa 2025",          desc: "Come sfruttare al massimo i nuovi formati di annuncio per il target decision maker nel B2B SaaS...",           mins: 7,  type: "Strategico"  },
-  { cat: "Trend",        flag: "IN TREND",  img: "📊", title: "Account-Based Marketing: Misurare il ROI in modo definitivo",   desc: "Finalmente un framework comprovato per misurare il reale impatto dell'ABM sul fatturato aziendale...",          mins: 5,  type: "Analitico"   },
-  { cat: "Automazione",  flag: "",          img: "🔄", title: "Marketing Automation: i 10 workflow che fanno la differenza",   desc: "Dal lead scoring all'onboarding: i processi che le aziende top usano per ridurre il tempo di conversione...",    mins: 8,  type: "Pratico"     },
-  { cat: "Lead Gen",     flag: "NUOVO",     img: "🎙️", title: "Webinar come motore di lead gen: case study +300% MQL",         desc: "Come un'azienda SaaS ha trasformato i webinar nella loro principale fonte di lead qualificati in 6 mesi...",    mins: 4,  type: "Case Study"  },
+  { cat: "Automazione",  flag: "IN TREND",  img: "AI", imgColor: "#7C3AED", title: "Come l'AI sta rivoluzionando il B2B Cold Outreach nel 2024",   desc: "Un nuovo studio mostra che gli agenti AI personalizzati stanno superando gli SDR umani del 34% nei tassi di...", mins: 6,  type: "Strategico"  },
+  { cat: "Lead Gen",     flag: "NUOVO",     img: "PV", imgColor: "#F97316", title: "La morte dei cookie di terze parti: cosa devono sapere i marketer", desc: "Le strategie di raccolta dati di prima parte non sono più opzionali. Scopri i migliori framework per la retent...", mins: 9,  type: "Psicologia"  },
+  { cat: "Paid Ads",     flag: "",          img: "LI", imgColor: "#2563EB", title: "LinkedIn Thought Leadership Ads: guida completa 2025",          desc: "Come sfruttare al massimo i nuovi formati di annuncio per il target decision maker nel B2B SaaS...",           mins: 7,  type: "Strategico"  },
+  { cat: "Trend",        flag: "IN TREND",  img: "AB", imgColor: "#16A34A", title: "Account-Based Marketing: Misurare il ROI in modo definitivo",   desc: "Finalmente un framework comprovato per misurare il reale impatto dell'ABM sul fatturato aziendale...",          mins: 5,  type: "Analitico"   },
+  { cat: "Automazione",  flag: "",          img: "AU", imgColor: "#7C3AED", title: "Marketing Automation: i 10 workflow che fanno la differenza",   desc: "Dal lead scoring all'onboarding: i processi che le aziende top usano per ridurre il tempo di conversione...",    mins: 8,  type: "Pratico"     },
+  { cat: "Lead Gen",     flag: "NUOVO",     img: "WB", imgColor: "#F97316", title: "Webinar come motore di lead gen: case study +300% MQL",         desc: "Come un'azienda SaaS ha trasformato i webinar nella loro principale fonte di lead qualificati in 6 mesi...",    mins: 4,  type: "Case Study"  },
 ];
 
 const SELEZIONATI = [
@@ -106,7 +106,7 @@ export default function AiStrategist() {
       const data = await res.json();
       setMessages(prev => [...prev, { role: "assistant", content: data.reply ?? "Errore nella risposta.", ts: new Date() }]);
     } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Errore di connessione. Riprova tra qualche secondo.", ts: new Date() }]);
+      setMessages(prev => [...prev, { role: "assistant", content: "Errore di connessione. Riprova tra qualche secondo.", ts: new Date() }]);
     } finally {
       setIsLoading(false);
     }
@@ -161,13 +161,15 @@ export default function AiStrategist() {
           <Card>
             <CardHeader className="px-5 py-3.5 border-b border-border flex-row items-center gap-2 space-y-0">
               <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-              <CardTitle className="text-sm font-bold">⚠️ Cosa non funziona e Perché</CardTitle>
+              <CardTitle className="text-sm font-bold">Cosa non funziona e Perché</CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {PROBLEMI.map((p, i) => (
                 <div key={i} className="rounded-xl p-3.5 border" style={{ backgroundColor: `${C.red}08`, borderColor: `${C.red}25` }}>
                   <div className="flex items-center gap-2 font-semibold text-sm mb-1">
-                    <span>{p.icon}</span> {p.title}
+                    <span className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black text-white shrink-0"
+                      style={{ backgroundColor: p.color }}>{p.icon}</span>
+                    {p.title}
                   </div>
                   <p className="text-[12px] text-muted-foreground">{p.desc}</p>
                 </div>
@@ -178,13 +180,15 @@ export default function AiStrategist() {
           <Card>
             <CardHeader className="px-5 py-3.5 border-b border-border flex-row items-center gap-2 space-y-0">
               <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
-              <CardTitle className="text-sm font-bold">✅ Correzioni Strategiche & Opportunità</CardTitle>
+              <CardTitle className="text-sm font-bold">Correzioni Strategiche & Opportunità</CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {CORREZIONI.map((c, i) => (
                 <div key={i} className="rounded-xl p-3.5 border" style={{ backgroundColor: `${C.green}08`, borderColor: `${C.green}25` }}>
                   <div className="flex items-center gap-2 font-semibold text-sm mb-1">
-                    <span>{c.icon}</span> {c.title}
+                    <span className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black text-white shrink-0"
+                      style={{ backgroundColor: c.color }}>{c.icon}</span>
+                    {c.title}
                   </div>
                   <p className="text-[12px] text-muted-foreground">{c.desc}</p>
                 </div>
@@ -329,9 +333,12 @@ export default function AiStrategist() {
               <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {filteredArticles.slice(0, 4).map((a, i) => (
                   <div key={i} className="rounded-xl border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group overflow-hidden">
-                    <div className="h-24 flex items-center justify-center text-4xl rounded-t-xl"
-                      style={{ backgroundColor: i % 2 === 0 ? "rgba(0,121,242,0.12)" : "rgba(121,94,255,0.12)" }}>
-                      {a.img}
+                    <div className="h-24 flex items-center justify-center rounded-t-xl"
+                      style={{ background: `linear-gradient(135deg, ${a.imgColor}22, ${a.imgColor}08)` }}>
+                      <span className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black text-white"
+                        style={{ background: `linear-gradient(135deg, ${a.imgColor}cc, ${a.imgColor}88)` }}>
+                        {a.img}
+                      </span>
                     </div>
                     <div className="p-3">
                       {a.flag && (

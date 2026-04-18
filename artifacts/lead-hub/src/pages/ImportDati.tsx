@@ -92,7 +92,7 @@ export default function ImportDati() {
 
         {/* Header */}
         <div>
-          <h1 className="font-extrabold text-[28px] tracking-tight leading-none">Import Your Data 🚀</h1>
+          <h1 className="font-extrabold text-[28px] tracking-tight leading-none">Import Your Data</h1>
           <p className="text-muted-foreground mt-1.5 text-[14px]">
             Potenzia il tuo workflow con smart field mapping e validazione in tempo reale.
           </p>
@@ -171,7 +171,7 @@ export default function ImportDati() {
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
-                  ✨ Field Mapping
+                  Field Mapping
                 </CardTitle>
                 <CardDescription className="text-xs mt-0.5">Mappa le colonne sorgente ai campi del sistema</CardDescription>
               </div>
@@ -223,7 +223,7 @@ export default function ImportDati() {
           {/* Data Health — 2/5 */}
           <Card className="lg:col-span-2">
             <CardHeader className="px-5 pt-5 pb-3">
-              <CardTitle className="text-base font-bold">Data Health ❤️</CardTitle>
+              <CardTitle className="text-base font-bold">Data Health</CardTitle>
               <CardDescription className="text-xs mt-0.5">Qualità e integrità del dataset importato</CardDescription>
             </CardHeader>
             <CardContent className="px-5 pb-5 space-y-4">
@@ -303,7 +303,7 @@ export default function ImportDati() {
         <Card>
           <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between space-y-0">
             <div>
-              <CardTitle className="text-base font-bold">Attività Recente 🗂️</CardTitle>
+              <CardTitle className="text-base font-bold">Attività Recente</CardTitle>
               <CardDescription className="text-xs mt-0.5">Storico degli ultimi import</CardDescription>
             </div>
             <button onClick={() => setShowAll(v => !v)} className="text-xs font-semibold" style={{ color: C.blue }}>

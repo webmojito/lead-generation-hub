@@ -32,11 +32,12 @@ const BUDGET_PIE = [
   { name: "Tools & Ops",      value: 10, color: C.cyan },
 ];
 
-function SectionTitle({ emoji, title, id }: { emoji: string; title: string; id: string }) {
+function SectionTitle({ title, id }: { emoji?: string; title: string; id: string }) {
   return (
-    <h2 id={id} className="text-xl font-extrabold flex items-center gap-2 mb-4 pt-2 scroll-mt-20">
-      <span>{emoji}</span>{title}
-    </h2>
+    <div id={id} className="flex items-center gap-3 mb-4 pt-2 scroll-mt-20">
+      <div className="w-1 h-6 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #7C3AED, #F97316)" }} />
+      <h2 className="text-xl font-extrabold">{title}</h2>
+    </div>
   );
 }
 
@@ -75,7 +76,7 @@ export default function PianoMarketing() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
             <h1 className="font-extrabold text-[28px] tracking-tight leading-none">
-              Piano Marketing Strategico 2024 🚀
+              Piano Marketing Strategico 2024
             </h1>
             <p className="text-muted-foreground mt-1.5 text-[14px]">
               Documentazione esecutiva per l'espansione nel mercato SaaS Enterprise.

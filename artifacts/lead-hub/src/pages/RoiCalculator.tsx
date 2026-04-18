@@ -13,12 +13,12 @@ function fmt$(v: number) { return new Intl.NumberFormat("it-IT", { style: "curre
 function fmtN(v: number) { return v.toLocaleString("it-IT"); }
 
 const CANALI = [
-  { id: "paid",    label: "Paid Ads",  icon: "📢", cpl: 48, convRate: 0.22 },
-  { id: "email",   label: "Email",     icon: "✉️", cpl: 12, convRate: 0.18 },
-  { id: "webinar", label: "Webinar",   icon: "🎙️", cpl: 28, convRate: 0.31 },
-  { id: "content", label: "Content",  icon: "📄", cpl: 22, convRate: 0.20 },
-  { id: "social",  label: "LinkedIn",  icon: "💼", cpl: 55, convRate: 0.28 },
-  { id: "seo",     label: "SEO",       icon: "🔍", cpl: 15, convRate: 0.24 },
+  { id: "paid",    label: "Paid Ads",  icon: "AD",  cpl: 48, convRate: 0.22 },
+  { id: "email",   label: "Email",     icon: "EM",  cpl: 12, convRate: 0.18 },
+  { id: "webinar", label: "Webinar",   icon: "WB",  cpl: 28, convRate: 0.31 },
+  { id: "content", label: "Content",   icon: "CT",  cpl: 22, convRate: 0.20 },
+  { id: "social",  label: "LinkedIn",  icon: "LI",  cpl: 55, convRate: 0.28 },
+  { id: "seo",     label: "SEO",       icon: "SE",  cpl: 15, convRate: 0.24 },
 ];
 
 const BENCHMARK = { cpc: "$4.20 – $6.50", mqlSql: "18.4%", closedWon: "14%" };
