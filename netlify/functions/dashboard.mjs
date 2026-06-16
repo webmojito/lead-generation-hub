@@ -63,7 +63,9 @@ export async function handler(event) {
     };
   }
 
-  const path = event.path.replace(/^\/\.netlify\/functions\/dashboard\/?/, "");
+  const path = event.path
+    .replace(/^\/\.netlify\/functions\/dashboard\/?/, "")
+    .replace(/^\/api\/dashboard\/?/, "");
 
   if (path === "kpis") return json(kpis);
   if (path === "funnel-velocity") return json(funnelVelocity);
