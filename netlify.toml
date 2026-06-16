@@ -14,6 +14,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/dashboard/*"
+  to = "/.netlify/functions/dashboard/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/healthz"
+  to = "/.netlify/functions/healthz"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
