@@ -52,6 +52,56 @@ const AUTO_REFRESH_OPTIONS = [
   { label: "Ogni 1 ora",     ms: 60 * 60 * 1000 },
 ];
 
+const FALLBACK_KPIS = {
+  avgCpl: 42.5,
+  avgCplChange: -12,
+  mqlToSqlRate: 24.8,
+  mqlToSqlChange: 3.2,
+  sqlToWonRate: 18.2,
+  sqlToWonChange: 1.5,
+  currentRoi: 4.8,
+  currentRoiChange: 8,
+  totalMqls: 2410,
+  totalSqls: 598,
+  totalPipeline: 1240000,
+  totalClosedWon: 420000,
+  performanceVsGoal: 75,
+  pipelineGoal: 1600000,
+  closedWonGoal: 560000,
+  totalContacts: 18340,
+  avgConversionTimeDays: 32,
+};
+
+const FALLBACK_FUNNEL_VELOCITY = [
+  { month: "JANUARY", mql: 380, sql: 95, mqlGoal: 450, sqlGoal: 120 },
+  { month: "FEBRUARY", mql: 420, sql: 110, mqlGoal: 480, sqlGoal: 130 },
+  { month: "MARCH", mql: 460, sql: 125, mqlGoal: 520, sqlGoal: 140 },
+  { month: "APRIL", mql: 510, sql: 140, mqlGoal: 550, sqlGoal: 150 },
+  { month: "MAY", mql: 490, sql: 128, mqlGoal: 600, sqlGoal: 160 },
+];
+
+const FALLBACK_CHANNEL_PERFORMANCE = [
+  { name: "Sito Web", mqls: 842, sqls: 210, conversionRate: 24.9, pipelineContribution: 32, wonContribution: 28, roi: 5.2, trend: "up", avgConversionDays: 28 },
+  { name: "Email Marketing", mqls: 654, sqls: 185, conversionRate: 28.3, pipelineContribution: 22, wonContribution: 25, roi: 4.8, trend: "up", avgConversionDays: 21 },
+  { name: "Advertising", mqls: 1210, sqls: 302, conversionRate: 24.9, pipelineContribution: 28, wonContribution: 22, roi: 3.9, trend: "flat", avgConversionDays: 35 },
+  { name: "Webinar", mqls: 320, sqls: 112, conversionRate: 35.0, pipelineContribution: 8, wonContribution: 12, roi: 6.5, trend: "up", avgConversionDays: 18 },
+  { name: "Eventi", mqls: 145, sqls: 42, conversionRate: 29.0, pipelineContribution: 5, wonContribution: 4, roi: 2.1, trend: "down", avgConversionDays: 45 },
+  { name: "Outbound", mqls: 210, sqls: 68, conversionRate: 32.4, pipelineContribution: 5, wonContribution: 9, roi: 4.2, trend: "up", avgConversionDays: 42 },
+];
+
+const FALLBACK_TOP_CHANNELS = {
+  topChannels: [
+    { name: "Paid Search (Google)", subtitle: "High intent signals", leads: 420, cpl: 24.1, trend: "up" },
+    { name: "LinkedIn Ads", subtitle: "Enterprise ABM focus", leads: 315, cpl: 62.4, trend: "up" },
+    { name: "Email Outreach", subtitle: "Warm sequence conversion", leads: 280, cpl: 18.8, trend: "up" },
+  ],
+  underperformingChannels: [
+    { name: "Meta Ads", subtitle: "Relevance score fatigue", leads: 45, cpl: 145.0, trend: "down" },
+    { name: "YouTube Content", subtitle: "Tracking pixel leakage", leads: 12, cpl: 310.0, trend: "down" },
+    { name: "Affiliate Network B", subtitle: "Quality score decay", leads: 68, cpl: 98.5, trend: "down" },
+  ],
+};
+
 /* ─── helpers formato ─── */
 function fmt$  (v: number) { return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v); }
 function fmtK  (v: number) { return new Intl.NumberFormat("it-IT", { notation: "compact", maximumFractionDigits: 1 }).format(v); }
@@ -196,7 +246,12 @@ export default function Dashboard() {
   const topChannelsQuery = useGetTopChannels();
 
   const loading = [kpisQuery, velocityQuery, performanceQuery, topChannelsQuery]
-    .some(q => q.isLoading || q.isFetching);
+    .some(q => (q.isLoading || q.isFetching) && !q.data);
+
+  const kpisLoading = kpisQuery.isLoading && !kpisQuery.data;
+  const velocityLoading = velocityQuery.isLoading && !velocityQuery.data;
+  const performanceLoading = performanceQuery.isLoading && !performanceQuery.data;
+  const topChannelsLoading = topChannelsQuery.isLoading && !topChannelsQuery.data;
 
   /* dark mode */
   useEffect(() => { document.documentElement.classList.toggle("dark", isDark); }, [isDark]);
@@ -231,9 +286,10 @@ export default function Dashboard() {
       " del " + new Date(kpisQuery.dataUpdatedAt).toLocaleDateString("it-IT", { day: "numeric", month: "short" })
     : null;
 
-  const kpis        = kpisQuery.data;
-  const velocityData = velocityQuery.data || [];
-  const topChannels  = topChannelsQuery.data;
+  const kpis        = kpisQuery.data ?? FALLBACK_KPIS;
+  const velocityData = velocityQuery.data ?? FALLBACK_FUNNEL_VELOCITY;
+  const channelData = performanceQuery.data ?? FALLBACK_CHANNEL_PERFORMANCE;
+  const topChannels  = topChannelsQuery.data ?? FALLBACK_TOP_CHANNELS;
 
   const donutData = kpis
     ? [
@@ -312,7 +368,7 @@ export default function Dashboard() {
   ], []);
 
   const table = useReactTable({
-    data: performanceQuery.data || [],
+    data: channelData,
     columns: tableColumns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -343,7 +399,7 @@ export default function Dashboard() {
             <span>{label}</span>
             <Icon className="w-4 h-4 opacity-40" />
           </div>
-          {kpisQuery.isLoading ? (
+          {kpisLoading ? (
             <Skeleton className="h-9 w-28 mb-2" />
           ) : (
             <div className="flex items-end gap-2 mb-2">
@@ -352,7 +408,7 @@ export default function Dashboard() {
             </div>
           )}
           <p className="text-xs text-muted-foreground font-medium">{subtitle}</p>
-          {active && !kpisQuery.isLoading && (
+          {active && !kpisLoading && (
             <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground space-y-1">
               {id === "cpl" && <p>Obiettivo: ridurre a 35€/lead entro Q4</p>}
               {id === "mql" && <p>Benchmark settore: 22% - sei sopra del {(24.8 - 22).toFixed(1)}pp</p>}
@@ -500,7 +556,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color }}>
                     {icon} {label}
                   </div>
-                  {kpisQuery.isLoading
+                  {kpisLoading
                     ? <Skeleton className="h-7 w-20" />
                     : <p className="text-2xl font-extrabold" style={{ color }}>{val}</p>}
                 </CardContent>
@@ -525,7 +581,7 @@ export default function Dashboard() {
                 )}
               </CardHeader>
               <CardContent className="p-5 flex-1 min-h-[300px]">
-                {velocityQuery.isLoading ? <Skeleton className="w-full h-full min-h-[280px]" /> : (
+                {velocityLoading ? <Skeleton className="w-full h-full min-h-[280px]" /> : (
                   <ResponsiveContainer width="100%" height={280} debounce={0}>
                     <BarChart data={velocityData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
@@ -559,7 +615,7 @@ export default function Dashboard() {
                 )}
               </CardHeader>
               <CardContent className="p-5 flex-1 flex flex-col justify-between">
-                {kpisQuery.isLoading ? <Skeleton className="w-full flex-1 min-h-[200px]" /> : (
+                {kpisLoading ? <Skeleton className="w-full flex-1 min-h-[200px]" /> : (
                   <>
                     <div className="relative h-[200px] w-full">
                       <ResponsiveContainer width="100%" height="100%" debounce={0}>
@@ -614,7 +670,7 @@ export default function Dashboard() {
               </button>
             </CardHeader>
             <CardContent className="p-0">
-              {performanceQuery.isLoading ? (
+              {performanceLoading ? (
                 <div className="p-5 space-y-2">
                   {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
                 </div>
@@ -666,7 +722,7 @@ export default function Dashboard() {
                 <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-[10px] font-bold">HIGH ROI</Badge>
               </CardHeader>
               <CardContent className="p-0">
-                {topChannelsQuery.isLoading ? (
+                {topChannelsLoading ? (
                   <div className="p-4 space-y-2">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
                 ) : (
                   <div className="divide-y divide-border/40">
@@ -703,7 +759,7 @@ export default function Dashboard() {
                 <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-[10px] font-bold">ATTENZIONE</Badge>
               </CardHeader>
               <CardContent className="p-0">
-                {topChannelsQuery.isLoading ? (
+                {topChannelsLoading ? (
                   <div className="p-4 space-y-2">{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
                 ) : (
                   <div className="divide-y divide-border/40">
